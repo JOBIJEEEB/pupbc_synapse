@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Print IDs</title>
+    <style>
+        /* --- FONTS --- */
+        @font-face { font-family: 'Arial'; src: local('Arial'); }
+        @font-face { font-family: 'Arial Bold'; font-weight: bold; src: local('Arial'); }
+        
+        @font-face { font-family: 'Gadugi'; src: url("{{ url_for('static', filename='fonts/gadugi.ttf') }}") format('truetype'); font-weight: normal; }
+        @font-face { font-family: 'Gadugi'; src: url("{{ url_for('static', filename='fonts/gadugib.ttf') }}") format('truetype'); font-weight: bold; }
+        
+        @font-face { font-family: 'Tahoma'; src: url("{{ url_for('static', filename='fonts/tahoma.ttf') }}") format('truetype'); font-weight: normal; }
+        @font-face { font-family: 'Tahoma'; src: url("{{ url_for('static', filename='fonts/tahoma_bd.ttf') }}") format('truetype'); font-weight: bold; }
+
+        /* --- PRINT SETTINGS (The Fix) --- */
+        @media print {
+            @page { 
+                margin: 0px !important; 
+            } 
+            
+            body { 
+                padding-top: 0 !important; 
+                background: white;
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+            }
+
+            .print-sheet {
+                display: flex !important; 
+                width: 100% !important;
+                height: auto !important;
+                overflow: visible !important;
+            }
+
+            .no-print { display: none !important; }
+
+            .card-pair {
+                break-inside: avoid; 
+                page-break-inside: avoid;
+                gap: 0px !important;
+                margin: 0px !important;
+            }
+        }
+        /* --- CONTROLS --- */
+        .controls {
+            position: fixed; top: 0; left: 0; width: 100%;
+            background: linear-gradient(90deg,rgb(150, 1, 1) 0%, rgb(68, 4, 110) 25%, rgb(4, 20, 110) 50%, rgb(3, 95, 95) 100%);
+            color: white;
+            padding: 15px; text-align: center;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            display: flex; justify-content: center; align-items: center; gap: 15px;
+        }
+        .controls input {
+            padding: 8px 12px; border-radius: 4px; border: none;
+            font-weight: bold; text-align: center; width: 250px;
+            text-transform: uppercase;
+        }
+        .btn-print {
+            background: #289652; color: rgb(255, 255, 255); border: none;
+            padding: 8px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;
+        }
+        .btn-print:hover { background: #33c069 }
+
+
+        /* --- SCREEN STYLES --- */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #ccc; 
+            display: flex; justify-content: center; 
+            padding-top: 100px;
+            padding-bottom: 0px;
+            margin: 0;
+        }
+        
+        /* --- SHEET CONTAINER --- */
+        .print-sheet {
+            background: rgb(255, 255, 255);
+            width: 350mm; /* 13 inches */
+            min-height: 215.9mm; /* 8.5 inches */
+            box-sizing: border-box;
+            border-radius: 5px;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            justify-content: center;
+            gap: 0mm; 
+        }
+
+        /* --- CARD PAIR --- */
+        .card-pair {
+            display: inline-flex;
+            flex-direction: row;
+            gap: 0; 
+            break-inside: avoid; 
+            page-break-inside: avoid;
+            -webkit-column-break-inside: avoid;
+            margin: 10px;
+            /* Bottom margin ensures spacing if they wrap */
+            
+        }
+
+        /* --- CARD STYLING --- */
+        .id-card {
+            width: 5.50cm; height: 8.35cm;
+            position: relative; background: white; overflow: hidden;
+            box-sizing: border-box; border: 1px solid #000000;
+        }
+
+        .id-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
+        .id-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; }
+
+        /* FRONT ELEMENTS */
+        .front-photo {
+            position: absolute; top: 67px; left: 128px; transform: translateX(-50%);
+            width: 109px; height: 109px; background: #eee; object-fit: cover;
+            box-sizing: border-box; border: 1px solid #57390248;
+        }
+        .front-name {
+            position: absolute; top: 182px; width: 100%; text-align: center;
+            line-height: 1.2; color: #000; left: 62%; transform: translateX(-50%);
+        }
+        .f-first { font-size: 8px; display: block; text-transform: uppercase; font-family: Arial, Helvetica, sans-serif; font-weight: 500; letter-spacing: -0.3px !important; }
+        .f-last { font-size: 14px; display: block; text-transform: uppercase; font-family: 'Gadugi', sans-serif; font-weight: bolder; }
+        .front-num {
+            position: absolute; top: 213px; width: 100%; text-align: center;
+            font-size: 12px; left: 62%; letter-spacing: -0.2px !important; transform: translateX(-50%);
+            font-family: Arial, Helvetica, sans-serif; font-weight: 500;
+        }
+        .front-course {
+            position: absolute; top: 230px; width: 80.5%; text-align: center;
+            font-size: 9px; font-weight: bold; line-height: 1.2; padding: 0 15px; box-sizing: border-box;
+            font-family: 'Gadugi', sans-serif; font-weight: bolder; left: 62%; transform: translateX(-50%);
+        }
+
+        /* BACK ELEMENTS */
+        .back-text {
+            position: absolute; font-size: 7px; color: #000; font-family: 'Tahoma', sans-serif; font-weight: normal;
+            line-height: 1.1; text-transform: uppercase;
+        }
+        .b-date-issue { top: 50.5px; left: 65.7px; }
+        .b-dob { top: 72px; left: 65.7px; }
+        .b-address { top: 92px; left: 6px; width: 185px; font-weight: normal; font-size: 7px; max-height: 25px; overflow: hidden; }
+        .b-emergency { top: 130px; left: 7px; width: 185px; }
+        .b-emergency-address { top: 138px; left: 7px; width: 185px; font-weight: normal; max-height: 25px; overflow: hidden; }
+        .b-fullname { top: 205px; width: 100%; text-align: center; font-size: 7px; font-weight: 900; text-transform: uppercase; }
+        .validity-box-container {
+            position: absolute; top: 228px; width: 100%; text-align: center;
+            font-size: 9px; font-weight: bold; font-family: 'Tahoma', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls no-print">
+        <label>Validity Period:</label>
+        <input type="text" id="validityInput" value="ACAD YEAR 2025-2026" oninput="updateValidity()">
+        <button class="btn-print" onclick="window.print()">Print</button>
+    </div>
+
+    <div class="print-sheet">
+        
+        {% for student in students %}
+        <div class="card-pair">
+            
+            <div class="id-card">
+                <img src="{{ url_for('static', filename='img/id_front_print.jpg') }}" class="id-bg">
+                <div class="id-overlay">
+                    {% set photo = url_for('static', filename=student.photo_filename) if student.photo_filename else url_for('static', filename='img/default_user.png') %}
+                    <img src="{{ photo }}" class="front-photo">
+                    <div class="front-name">
+                        <span class="f-first">{{ student.first_name }} {{ student.middle_name|first + '.' if student.middle_name else '' }}</span>
+                        <span class="f-last">{{ student.last_name }}</span>
+                    </div>
+                    <div class="front-num">{{ student.student_number }}</div>
+                    <div class="front-line"></div>
+                    <div class="front-course">{{ student.full_course_name }}</div>
+                </div>
+            </div>
+
+            <div class="id-card">
+                <img src="{{ url_for('static', filename='img/id_back.png') }}" class="id-bg">
+                <div class="id-overlay">
+                    <div class="back-text b-date-issue" id="date-{{ loop.index }}">-</div>
+                    <div class="back-text b-dob">
+                        {% if student.birthdate %}{{ student.birthdate.strftime('%m/%d/%Y') }}{% else %}-{% endif %}
+                    </div>
+                    <div class="back-text b-address">{{ student.residential_address }}</div>
+                    
+                    <div class="back-text b-emergency">
+                        <strong>{{ student.emergency_contact_name }} - {{ student.emergency_contact_number }}</strong>
+                    </div>
+                    <div class="back-text b-emergency-address">{{ student.emergency_address }}</div>
+                    
+                    <div class="back-text b-fullname">
+                        {{ student.first_name }} {{ student.middle_name|first + '.' if student.middle_name else '' }} {{ student.last_name }}
+                    </div>
+                    <div class="validity-box-container">
+                        <span class="dynamic-validity">Acad Year 2025-2026</span>
+                    </div>
+                </div>
+            </div>
+
+        </div> 
+        {% endfor %}
+
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const today = new Date();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            const yyyy = today.getFullYear();
+            const dateStr = `${mm}/${dd}/${yyyy}`;
+
+            const dateElements = document.querySelectorAll('.b-date-issue');
+            dateElements.forEach(el => el.textContent = dateStr);
+        });
+
+        function updateValidity() {
+            const inputVal = document.getElementById('validityInput').value;
+            const validities = document.querySelectorAll('.dynamic-validity');
+            validities.forEach(el => el.textContent = inputVal);
+        }
+    </script>
+
+</body>
+</html>

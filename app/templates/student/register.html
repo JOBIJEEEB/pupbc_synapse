@@ -1,0 +1,1017 @@
+{% extends "base.html" %}
+
+{% block title %}Student Registration{% endblock %}
+
+{% block content %}
+<style>
+    /* ==========================================================================
+       1. FONTS & GLOBAL VARIABLES
+       ========================================================================== */
+    @font-face {
+        font-family: 'Poppins';
+        src: url("{{ url_for('static', filename='fonts/Poppins-Regular.ttf') }}") format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    @font-face {
+        font-family: 'Poppins';
+        src: url("{{ url_for('static', filename='fonts/Poppins-Bold.ttf') }}") format('truetype');
+        font-weight: bold;
+        font-style: normal;
+    }
+
+    @font-face {
+        font-family: 'Tahoma';
+        src: url("{{ url_for('static', filename='fonts/tahoma.ttf') }}") format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    @font-face {
+        font-family: 'Tahoma';
+        src: url("{{ url_for('static', filename='fonts/tahoma_bold.ttf') }}") format('truetype');
+        font-weight: bold;
+        font-style: normal;
+    }
+
+    html, body {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(85deg,rgb(172, 170, 170) 0%, rgb(233, 230, 227) 15%, rgb(241, 237, 237) 50%, rgb(248, 244, 244) 80%, rgb(155, 149, 149) 100%);
+        background-repeat: no-repeat;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .container {
+        flex: 1;
+        max-width: 1200px !important; 
+        width: 100%;
+    }
+
+    /* ==========================================================================
+       2. REGISTRATION FORM LAYOUT
+       ========================================================================== */
+    .card-body-flex {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding: 20px; 
+        overflow-y: auto; 
+    }
+    
+    .card-body-flex::-webkit-scrollbar {
+        width: 8px;
+    }
+    .card-body-flex::-webkit-scrollbar-track {
+        background: #f1f1f1; 
+    }
+    .card-body-flex::-webkit-scrollbar-thumb {
+        background: #ccc; 
+        border-radius: 4px;
+    }
+    .card-body-flex::-webkit-scrollbar-thumb:hover {
+        background: #aaa; 
+    }
+
+    #regForm {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1; 
+    }
+
+    .button-container {
+        margin-top: auto; 
+        padding-top: 20px;
+        border-top: 1px solid #eee; 
+    }
+
+    /* --- Stepper (Dynamic Colors) --- */
+    .step-indicator {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        position: relative;
+        padding: 0 20px;
+    }
+    
+    .step-indicator::before {
+        content: '';
+        position: absolute;
+        top: 15px; left: 0;
+        width: 100%; height: 3px;
+        background: #e9ecef;
+        z-index: 1;
+    }
+    
+    .step {
+        width: 35px; height: 35px;
+        border-radius: 50%;
+        background-color: #e9ecef; /* Default Gray (Pending) */
+        color: #6c757d;
+        display: flex;
+        align-items: center; justify-content: center;
+        font-weight: bold;
+        position: relative; z-index: 2;
+        border: 2px solid #fff; 
+        transition: all 0.4s ease; /* Smooth transition for everything */
+    }
+    
+    /* Active State: Will get thick outline via JS */
+     .step.active {
+        color: white;
+        background-color: #2c3e50; /* Fallback Dark Blue */
+        transform: scale(1.15); 
+        box-shadow: 0 0 0 5px rgba(44, 62, 80, 0.2); /* Default Glow */
+    }
+    
+    /* Completed State: Will get Org Color via JS */
+    .step.completed {
+        color: white;
+    }
+    .form-step {
+        display: none;
+        animation: fadeIn 0.4s ease-in-out;
+    }
+    .form-step.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================================
+       3. INPUT FIELDS & FOCUS SYNC
+       ========================================================================== */
+    label, .form-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 5px;
+    }
+
+    .form-control, .form-select {
+        border: 1px solid #ced4da;
+        padding: 10px 12px;
+        font-size: 0.95rem;
+        color: #333;
+        border-radius: 6px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        font-family: inherit; 
+    }
+
+    .form-select {
+        padding-right: 40px !important; 
+        text-overflow: ellipsis;        
+        white-space: nowrap;            
+        overflow: hidden;
+    }
+
+    .input-group {
+        border-radius: 6px;
+        transition: box-shadow 0.2s;
+    }
+
+    .input-group-text {
+        background-color: #fff;
+        border: 1px solid #ced4da;
+        border-right: none;
+        color: #888;
+        padding: 0 15px;
+        transition: border-color 0.2s;
+    }
+
+    .input-group > .form-control, 
+    .input-group > .form-select {
+        border-left: none;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    /* Focus States */
+    .form-control:focus, .form-select:focus {
+        border-color: #000000;
+        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
+        outline: none;
+    }
+
+    .input-group:focus-within .input-group-text,
+    .input-group:focus-within .form-control,
+    .input-group:focus-within .form-select {
+        border-color: #000000 !important;
+        box-shadow: none !important; 
+    }
+
+    .input-group:focus-within {
+        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
+        border-radius: 6px;
+        z-index: 3;
+    }
+    
+    .input-group:focus-within .input-group-text {
+        color: #000000;
+    }
+
+    /* Checkboxes */
+    .form-check-input, .big-checkbox {
+        cursor: pointer;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+    .form-check-input:checked, .big-checkbox:checked {
+        background-color: #080808;
+        border-color: #080808;
+    }
+
+    /* ==========================================================================
+       4. CUSTOM DROPDOWN (ORG SELECT)
+       ========================================================================== */
+    .org-logo {
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
+        margin-right: 12px;
+    }
+    
+    .custom-dropdown-toggle {
+        background-color: #fff;
+        border: 1px solid #ced4da;
+        color: #333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 12px;
+        transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+    }
+
+    .custom-dropdown-toggle:hover {
+        background-color: #f8f9fa;
+        border-color: #aeb4b9; 
+        color: #333;           
+    }
+    
+    .custom-dropdown-toggle:focus {
+        border-color: #000;
+        box-shadow: 0 0 0 3px rgba(0,0,0,0.15);
+        background-color: #fff;
+    }
+
+    .dropdown-item {
+        display: flex;       
+        align-items: center; 
+        padding: 8px 15px;   
+        cursor: pointer;
+    }
+
+    /* ==========================================================================
+       5. CARD & HEADER STYLING
+       ========================================================================== */
+    .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 5px 25px rgba(0,0,0,0.08); 
+        width: 100%; 
+        height: 650px; 
+        overflow: hidden; 
+    }
+    
+    
+    .card-header {
+        border-radius: 12px 12px 0 0 !important;
+        padding: 18px 25px;
+        background-color: #2c3e50; 
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        transition: background-image 0.5s ease-in-out;
+        flex-shrink: 0; 
+    }
+
+    .btn-primary {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        transition: background-color 0.5s ease, border-color 0.5s ease;
+    }
+
+    /* DYNAMIC GRADIENT TEXT SETUP */
+    .section-title {
+        font-weight: bolder; /* Thicker font makes gradients look better */
+        /* Magic properties for gradient text */
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        
+        /* Default Fallback Gradient */
+        background-image: linear-gradient(180deg, #1d1d1d, #19191a);
+        
+        transition: background-image 0.5s ease-in-out;
+    }
+
+    /* ==========================================================================
+       6. CERTIFICATION BOX
+       ========================================================================== */
+    .certification-box {
+        background-color: #fff3cd; 
+        border: 2px solid #ffecb5;
+        border-left: 5px solid #ffc107;
+        border-radius: 6px;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .certification-box.checked {
+        background-color: #d1e7dd; 
+        border-color: #badbcc;     
+        border-left-color: #198754; 
+    }
+
+    .certification-box .form-check {
+        margin: 0; padding: 0;
+        display: flex; align-items: center;
+    }
+
+    .big-checkbox {
+        width: 1.3em; height: 1.3em;
+        margin-right: 15px; margin-top: 0;
+        margin-left: 0px !important;
+        border: 2px solid #664d03;
+        flex-shrink: 0;
+        margin-left: 5px;
+    }
+    
+    .big-checkbox:checked {
+        background-color: #198754; border-color: #198754;
+    }
+
+    .certification-label {
+        font-size: 1rem; font-weight: 500;
+        color: #664d03; cursor: pointer;
+        margin: 0; line-height: 1.2;
+        transition: color 0.3s;
+    }
+    
+    .certification-box.checked .certification-label {
+        color: #0f5132; 
+    }
+
+    /* ==========================================================================
+       7. ID CARD PREVIEW
+       ========================================================================== */
+    .id-card-wrapper {
+        position: sticky;
+        top: 20px;
+        perspective: 1000px; 
+    }
+
+    .pup-id-card {
+        width: 320px; height: 507px;
+        position: relative;
+        border-radius: 2px;
+        margin: 0 auto;
+        font-family: 'Arial', sans-serif;
+        transform-style: preserve-3d;
+        transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .pup-id-card.flipped { transform: rotateY(180deg); }
+
+    .card-face {
+        position: absolute;
+        width: 100%; height: 100%;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        top: 0; left: 0;
+        border-radius: 2px;
+        overflow: hidden;
+        background-color: #000;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+
+    .card-front { z-index: 2; transform: rotateY(0deg); }
+    
+    .card-back { 
+        transform: rotateY(180deg); 
+        z-index: 1;
+        font-family: 'Tahoma', sans-serif; 
+    }
+
+    .id-bg { width: 100%; height: 100%; object-fit: fill; position: absolute; top: 0; left: 0; z-index: 1; }
+    .id-content { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; }
+
+    /* Front Positioning */
+    .photo-area {
+        position: absolute; top: 113px; left: 198px;
+        transform: translateX(-50%); width: 166px; height: 166px;
+        background: #eee; border: 1px solid #ddd;
+    }
+    .photo-area img { width: 100%; height: 100%; object-fit: cover; }
+    
+    .name-group { position: absolute; top: 287px; width: 100%; text-align: center; padding: 0 10px 0 90px; }
+    .first-name { font-size: 14px; text-transform: uppercase; display: block; line-height: 1.9; }
+    .last-name { font-size: 18px; font-weight: bold; text-transform: uppercase; display: block; line-height: 1; }
+    
+    .student-number { 
+        position: absolute; top: 343px; width: 100%; text-align: center; 
+        padding-left: 88px; padding-right: 10px; font-size: 17px; letter-spacing: 0.5px; 
+    }
+    
+    .course-name { 
+        position: absolute; top: 372px; left: 89px; width: 220px; 
+        text-align: center; font-size: 15px; font-weight: bold; 
+        display: flex; align-items: center; justify-content: center; line-height: 1.1; 
+    }
+
+    /* Back Positioning */
+    .back-text { 
+        position: absolute; font-size: 12px; color: #000; width: 280px; 
+        white-space: normal; overflow-wrap: break-word; word-wrap: break-word; 
+    }
+    .b-dob { top: 114px; left: 102px; font-size: 11px; font-weight: normal; width: auto;}
+    .b-address { text-align: left; top: 149px; left: 10px; width: 280px; font-size: 11px; line-height: 1.1; font-weight: normal; max-height: 40px;}
+    .b-emergency { text-align: left; top: 210px; left: 10px; width: 280px; font-size: 11px; line-height: 1.2;}
+    .b-emergency-address { text-align: left; top: 225px; left: 10px; width: 280px; font-size: 11px; line-height: 1.2; font-weight: normal; max-height: 40px;}
+    .b-validity-name { top: 325px; width: 100%; text-align: center; font-size: 13px; font-weight: 900; text-transform: uppercase; }
+    .b-validity-period { top: 368px; width: 100%; text-align: center; font-size: 13px; font-weight: bolder; text-transform: uppercase; }
+
+    @media (max-width: 768px) {
+        .container { padding: 0 10px; }
+        .col-lg-7, .col-lg-5 { padding: 0 5px; }
+        .card-body-flex, .card-header { padding: 15px; }
+        
+        /* Reset fixed height on mobile */
+        .card {
+            height: auto; 
+            overflow: visible;
+        }
+        
+        .id-card-wrapper {
+            position: static; 
+            margin-top: 40px;    
+            margin-bottom: 50px; 
+        }
+        
+        .pup-id-card {
+            transform: scale(0.9); 
+            transform-origin: top center;
+            margin-bottom: -40px; 
+        }
+        
+        .step-indicator { padding: 0; margin-bottom: 20px; }
+    }
+</style>
+
+<div class="container mt-5">
+     <div class="row">
+        <div class="col-lg-7">
+            <div class="card shadow-sm"> 
+                <div class="card-header text-white">
+                    <h5 class="mb-0 fw-bold" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.6);">Registration Form</h5>
+                </div>
+                
+                <div class="card-body card-body-flex">
+                    
+                    <div class="step-indicator">
+                        <div class="step active" id="step-dot-1">1</div>
+                        <div class="step" id="step-dot-2">2</div>
+                        <div class="step" id="step-dot-3">3</div>
+                        <div class="step" id="step-dot-4">4</div>
+                    </div>
+
+                    <form action="" method="POST" enctype="multipart/form-data" id="regForm" autocomplete="off">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        
+                        <div class="form-step active" id="step-1">
+                            <h5 class="section-title mb-3">Academic Information</h5>
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <label class="form-label">Organization <span class="text-danger">*</span></label>
+                                    <input type="hidden" name="organization" id="orgSelect" required>
+                                    <div class="dropdown">
+                                        <button class="btn custom-dropdown-toggle w-100 text-start" type="button" id="orgDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <span>Select Org</span> 
+                                        </button>
+                                        <ul class="dropdown-menu w-100" aria-labelledby="orgDropdownBtn" style="max-height: 300px; overflow-y: auto;">
+                                            <li><a class="dropdown-item" onclick="selectOrg('ACES', 'aces.png')"><img src="{{ url_for('static', filename='img/orgs/aces.png') }}" class="org-logo"> ACES</a></li>
+                                            <li><a class="dropdown-item" onclick="selectOrg('HRSS', 'hrss.png')"><img src="{{ url_for('static', filename='img/orgs/hrss.png') }}" class="org-logo"> HRSS</a></li>
+                                            <li><a class="dropdown-item" onclick="selectOrg('IBITS', 'ibits.png')"><img src="{{ url_for('static', filename='img/orgs/ibits.png') }}" class="org-logo"> IBITS</a></li>
+                                            <li><a class="dropdown-item" onclick="selectOrg('JPIA', 'jpia.png')"><img src="{{ url_for('static', filename='img/orgs/jpia.png') }}" class="org-logo"> JPIA</a></li>
+                                            <li><a class="dropdown-item" onclick="selectOrg('PIIE', 'piie.png')"><img src="{{ url_for('static', filename='img/orgs/piie.png') }}" class="org-logo"> PIIE</a></li>
+                                            <li><a class="dropdown-item" onclick="selectOrg('SMS', 'sms.png')"><img src="{{ url_for('static', filename='img/orgs/sms.png') }}" class="org-logo"> SMS</a></li>
+                                            <li><a class="dropdown-item" onclick="selectOrg('YES', 'yes.png')"><img src="{{ url_for('static', filename='img/orgs/yes.png') }}" class="org-logo"> YES</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <label class="form-label">Course <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-book"></i></span>
+                                        <select class="form-select" name="course" id="courseSelect" required>
+                                            <option value="" selected disabled>Select Org First...</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Year Level <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                                        <select class="form-select" name="year_level" id="yearSelect" required>
+                                            <option value="" selected disabled>Select...</option>
+                                            <option value="1ST YEAR">1st Year</option>
+                                            <option value="2ND YEAR">2nd Year</option>
+                                            <option value="3RD YEAR">3rd Year</option>
+                                            <option value="4TH YEAR">4th Year</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Section <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-people"></i></span>
+                                        <select class="form-select" name="section" id="sectionSelect" required>
+                                            <option value="" selected disabled>Select Year...</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-step" id="step-2">
+                            <h5 class="section-title mb-3">Personal Details</h5>
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">First Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="first_name" id="inputFirst" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Middle Name</label>
+                                    <input type="text" class="form-control" name="middle_name" id="inputMiddle">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="last_name" id="inputLast" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Student Number <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-card-heading"></i></span>
+                                        <input type="text" class="form-control" name="student_number" id="inputStudentNum" placeholder="202X-XXXXX-BN-0" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                        <input type="email" class="form-control" name="email" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Residential Address <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-house-door"></i></span>
+                                    <textarea class="form-control" name="residential_address" id="inputAddress" rows="2" required></textarea>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Date of Birth <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
+                                        <input type="date" class="form-control" name="birthdate" id="inputBirthdate" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Upload Photo (2x2) <span class="text-muted small fw-normal">(Optional)</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-image"></i></span>
+                                        <input type="file" class="form-control" name="photo" id="inputPhoto" accept="image/*">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-step" id="step-3">
+                            <h5 class="section-title mb-3">Emergency Contact</h5>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Contact Person <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-person-exclamation"></i></span>
+                                        <input type="text" class="form-control" name="emergency_contact_name" id="inputEmergencyName" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Contact Number <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                        <input type="text" class="form-control" name="emergency_contact_number" id="inputEmergencyNum" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Contact Person Address <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                    <input type="text" class="form-control" name="emergency_address" id="inputEmergencyAdd" placeholder="Full Address" required>
+                                </div>
+                                
+                                <div class="form-check mt-3">
+                                    <input class="form-check-input" type="checkbox" id="sameAddressCheck">
+                                    <label class="form-check-label" for="sameAddressCheck" style="font-size: 0.85rem; font-weight: normal; text-transform: none;">
+                                        Same as Residential Address
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-step" id="step-4">
+                            <h5 class="section-title mb-3">Review Registration</h5>
+                            <p class="text-muted">
+                                Please review the details below and the Live ID Preview <strong>(Flip to check the back)</strong>. 
+                                Once verified, <strong>check the certification box</strong> to enable the Submit button.
+                            </p>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered">
+                                    <col style="width: 25%; background-color: #ffffff;">
+                                    <tr><th>Name</th><td id="reviewName">-</td></tr>
+                                    <tr><th>Student Number</th><td id="reviewNum">-</td></tr>
+                                    <tr><th>Course</th><td id="reviewCourse">-</td></tr>
+                                    <tr><th>Year Level</th><td id="reviewYear">-</td></tr>
+                                    <tr><th>Birthdate</th><td id="reviewBirth">-</td></tr>
+                                    <tr><th>Address</th><td id="reviewAddress">-</td></tr>
+                                </table>
+                            </div>
+                            
+                            <div class="certification-box">
+                                <div class="form-check">
+                                    <input class="form-check-input big-checkbox" type="checkbox" id="confirmCheck">
+                                    <label class="form-check-label certification-label" for="confirmCheck">
+                                        I certify that the information provided is true and correct.
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="button-container d-flex justify-content-between">
+                            <button type="button" class="btn btn-secondary" id="prevBtn" onclick="changeStep(-1)" disabled>Previous</button>
+                            <button type="button" class="btn btn-primary" id="nextBtn" onclick="changeStep(1)">Next Step</button>
+                            <button type="submit" class="btn btn-success" id="submitBtn" style="display: none;" disabled>Submit Registration</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="id-card-wrapper text-center">
+                <h5 class="text-muted mb-2">Live ID Preview</h5>
+                <div class="mb-3">
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="flipCard()">
+                        <i class="bi bi-arrow-repeat"></i> Flip ID
+                    </button>
+                </div>
+                
+                <div class="pup-id-card" id="idCard3D">
+                    <div class="card-face card-front">
+                        <img src="{{ url_for('static', filename='img/id_front_preview.jpg') }}" class="id-bg" alt="Front">
+                        <div class="id-content">
+                            <div class="photo-area"><img id="previewImage" src="" style="display: none;"></div>
+                            <div class="name-group">
+                                <span class="first-name" id="previewFirst">FIRST NAME M.</span>
+                                <span class="last-name" id="previewLast">LAST NAME</span>
+                            </div>
+                            <div class="student-number" id="previewNum">202X-XXXXX-BN-X</div>
+                            <div class="course-name" id="previewCourse">Bachelor of Science in<br>Computer Engineering</div>
+                        </div>
+                    </div>
+                    <div class="card-face card-back">
+                        <img src="{{ url_for('static', filename='img/id_back.png') }}" class="id-bg" alt="Back">
+                        <div class="id-content">
+                            <div class="back-text b-dob" id="previewDob">MM/DD/YYYY</div>
+                            <div class="back-text b-address" id="previewAddress">123 STREET, BRGY, CITY, PROVINCE</div>
+                            <div class="back-text b-emergency" id="previewEmergency"><strong>CONTACT PERSON - 09123456789</strong><br></div>
+                            <div class="back-text b-emergency-address" id="previewEmergencyAddress">CONTACT PERSON ADDRESS HERE</div>
+                            <div class="back-text b-validity-name" id="previewValidName">FIRST NAME M. LAST NAME</div>
+                            <div class="back-text b-validity-period">Acad Year 2025-2026</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+   
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // --- 1. RECEIVE DATABASE DATA ---
+    const dbOrgData = {{ org_data_json | safe }};
+    const dbSectionData = {{ section_data_json | safe }};
+
+    // --- 2. INITIALIZE DYNAMIC DROPDOWN ---
+    document.addEventListener("DOMContentLoaded", function() {
+        const dropdownMenu = document.querySelector('ul[aria-labelledby="orgDropdownBtn"]');
+        
+        // Clear the hardcoded HTML list
+        dropdownMenu.innerHTML = ''; 
+
+        // Generate list from Database
+        Object.keys(dbOrgData).forEach(orgCode => {
+            const org = dbOrgData[orgCode];
+            const li = document.createElement('li');
+            // Re-create your layout dynamically
+            li.innerHTML = `<a class="dropdown-item" onclick="selectOrg('${orgCode}', '${org.logo}')">
+                                <img src="/static/img/orgs/${org.logo}" class="org-logo"> ${orgCode}
+                            </a>`;
+            dropdownMenu.appendChild(li);
+        });
+
+        // Initialize Visuals
+        updateStepVisuals();
+    });
+
+    // --- 3. CORE SELECTION LOGIC ---
+    const courseSelect = document.getElementById('courseSelect');
+    const yearSelect = document.getElementById('yearSelect');
+    const sectionSelect = document.getElementById('sectionSelect');
+
+    function selectOrg(orgCode, imageName) {
+        const data = dbOrgData[orgCode];
+        if (!data) return;
+
+        // Update Input & Button Text
+        document.getElementById('orgSelect').value = orgCode;
+        const btn = document.getElementById('orgDropdownBtn');
+        btn.innerHTML = `<img src="/static/img/orgs/${data.logo}" class="org-logo"> ${orgCode}`;
+
+        // 1. Header Image
+        const header = document.querySelector('.card-header');
+        if (data.header_bg) {
+            header.style.backgroundImage = `url('/static/img/orgs/${data.header_bg}')`;
+        } else {
+            header.style.backgroundImage = 'none';
+            header.style.backgroundColor = data.color;
+        }
+
+        // 2. Buttons & Stepper Colors
+        const themeColor = data.color;
+        const gradientTheme = data.gradient;
+
+        document.querySelectorAll('.btn-primary').forEach(b => {
+            b.style.backgroundColor = themeColor;
+            b.style.borderColor = themeColor;
+        });
+
+        // 3. Text Gradients
+        document.querySelectorAll('.section-title').forEach(t => {
+            t.style.backgroundImage = gradientTheme;
+        });
+
+        // 4. Update Stepper
+        updateStepVisuals();
+
+        // 5. Populate Courses
+        courseSelect.innerHTML = '<option value="" selected disabled>Select Course...</option>';
+        data.courses.forEach(c => {
+            let opt = document.createElement('option');
+            opt.value = c.code; 
+            opt.textContent = c.name; 
+            opt.setAttribute('data-fullname', c.name);
+            courseSelect.appendChild(opt);
+        });
+
+        // Reset dependent dropdowns
+        sectionSelect.innerHTML = '<option value="" selected disabled>Select Year...</option>';
+        updatePreviewInfo();
+    }
+
+    function updateSections() {
+        const c = courseSelect.value;
+        const y = yearSelect.value;
+        
+        sectionSelect.innerHTML = '<option value="" selected disabled>Select...</option>';
+
+        if (dbSectionData[c] && dbSectionData[c][y]) {
+            const sections = dbSectionData[c][y];
+            sections.sort(); // Alphabetical sort
+            sections.forEach(s => {
+                let opt = document.createElement('option');
+                opt.value = s; 
+                opt.textContent = s; 
+                sectionSelect.appendChild(opt);
+            });
+        }
+        updatePreviewInfo();
+    }
+
+    // --- 4. VISUAL HELPERS ---
+    function updateStepVisuals() {
+        const orgVal = document.getElementById('orgSelect').value;
+        // Use DB color or default
+        const themeColor = (orgVal && dbOrgData[orgVal]) ? dbOrgData[orgVal].color : "#2c3e50";
+
+        for (let i = 1; i <= totalSteps; i++) {
+            const dot = document.getElementById(`step-dot-${i}`);
+            dot.className = "step"; // Reset classes
+            dot.style = ""; // Reset inline styles
+
+            if (i < currentStep) {
+                dot.classList.add('completed');
+                dot.style.backgroundColor = themeColor;
+                dot.style.borderColor = themeColor;
+                dot.style.color = "white";
+            } else if (i === currentStep) {
+                dot.classList.add('active');
+                dot.style.backgroundColor = themeColor;
+                dot.style.borderColor = themeColor;
+                dot.style.boxShadow = `0 0 0 5px ${themeColor}66`; // Add transparency for glow
+                dot.style.color = "white";
+            } else {
+                dot.style.backgroundColor = "#e9ecef";
+                dot.style.color = "#6c757d";
+            }
+        }
+    }
+
+    // --- 5. STANDARD FORM LOGIC (Unchanged) ---
+    let currentStep = 1;
+    const totalSteps = 4;
+
+    function changeStep(n) {
+        if (n === 1 && !validateCurrentStep()) return;
+        document.getElementById(`step-${currentStep}`).classList.remove('active');
+        currentStep += n;
+        document.getElementById(`step-${currentStep}`).classList.add('active');
+        updateStepVisuals();
+        
+        document.getElementById('prevBtn').disabled = (currentStep === 1);
+        if (currentStep === totalSteps) {
+            document.getElementById('nextBtn').style.display = 'none';
+            document.getElementById('submitBtn').style.display = 'block';
+            populateReview();
+        } else {
+            document.getElementById('nextBtn').style.display = 'block';
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('nextBtn').innerText = "Next Step";
+        }
+    }
+
+    function validateCurrentStep() {
+    const currentDiv = document.getElementById(`step-${currentStep}`);
+    const inputs = currentDiv.querySelectorAll('input[required], select[required], textarea[required]');
+    let valid = true;
+
+    inputs.forEach(input => {
+        input.setCustomValidity("");
+        if (!input.checkValidity()) {
+            input.reportValidity();
+            valid = false;
+        } 
+        else if (input.type === "email") {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(input.value)) {
+                input.setCustomValidity("Please enter a valid email address (e.g., user@gmail.com)");
+                input.reportValidity();
+                valid = false;
+            }
+        }
+    });
+    return valid;
+}
+
+    function updatePreviewInfo() {
+        const selectedOption = courseSelect.options[courseSelect.selectedIndex];
+        if (selectedOption && selectedOption.value !== "") {
+            document.getElementById('previewCourse').innerHTML = selectedOption.getAttribute('data-fullname');
+        }
+    }
+
+    function flipCard() {
+        document.getElementById('idCard3D').classList.toggle('flipped');
+    }
+
+    // Listeners
+    courseSelect.addEventListener('change', updateSections);
+    yearSelect.addEventListener('change', updateSections);
+
+    // ID Card Input Listeners
+    const inputFirst = document.getElementById('inputFirst');
+    const inputMiddle = document.getElementById('inputMiddle');
+    const inputLast = document.getElementById('inputLast');
+
+    function updateNames() {
+        let first = inputFirst.value.toUpperCase();
+        let middle = inputMiddle.value.toUpperCase();
+        let last = inputLast.value.toUpperCase();
+        let midInitial = middle ? middle.charAt(0) + "." : "";
+        document.getElementById('previewFirst').textContent = first ? `${first} ${midInitial}` : "FIRST NAME M.";
+        document.getElementById('previewLast').textContent = last || "LAST NAME";
+        document.getElementById('previewValidName').textContent = `${first} ${midInitial} ${last}`;
+        document.getElementById('reviewName').innerText = `${first} ${midInitial} ${last}`;
+    }
+    
+    [inputFirst, inputMiddle, inputLast].forEach(el => el.addEventListener('input', updateNames));
+
+    document.getElementById('inputStudentNum').addEventListener('input', function() {
+        document.getElementById('previewNum').textContent = this.value || "202X-XXXXX-BN-X";
+        document.getElementById('reviewNum').innerText = this.value;
+    });
+
+    document.getElementById('inputBirthdate').addEventListener('input', function() {
+        const rawDate = this.value;
+        if (rawDate) {
+            const parts = rawDate.split('-');
+            const formatted = `${parts[1]}/${parts[2]}/${parts[0]}`;
+            document.getElementById('previewDob').textContent = formatted;
+            document.getElementById('reviewBirth').innerText = rawDate;
+        }
+    });
+
+    const inputAddress = document.getElementById('inputAddress');
+    inputAddress.addEventListener('input', function() {
+        const val = this.value.toUpperCase();
+        document.getElementById('previewAddress').textContent = val || "RESIDENTIAL ADDRESS";
+        document.getElementById('reviewAddress').innerText = val;
+        if(document.getElementById('sameAddressCheck').checked) {
+            document.getElementById('inputEmergencyAdd').value = this.value;
+            updateEmergencyAddress();
+        }
+    });
+
+    // Emergency Contact
+    function updateEmergency() {
+        const name = document.getElementById('inputEmergencyName').value.toUpperCase();
+        const num = document.getElementById('inputEmergencyNum').value;
+        document.getElementById('previewEmergency').innerHTML = `<strong>${name || "PARENT"} - ${num || "09123456789"}</strong><br>`;
+    }
+    function updateEmergencyAddress() {
+        const add = document.getElementById('inputEmergencyAdd').value.toUpperCase();
+        document.getElementById('previewEmergencyAddress').innerHTML = `${add || "CONTACT PERSON ADDRESS"}`;
+    }
+    document.getElementById('inputEmergencyName').addEventListener('input', updateEmergency);
+    document.getElementById('inputEmergencyNum').addEventListener('input', updateEmergency);
+    document.getElementById('inputEmergencyAdd').addEventListener('input', updateEmergencyAddress);
+
+    // Same Address Checkbox
+    document.getElementById('sameAddressCheck').addEventListener('change', function() {
+        const emAddInput = document.getElementById('inputEmergencyAdd');
+        if(this.checked) {
+            emAddInput.value = inputAddress.value;
+            emAddInput.readOnly = true;
+            updateEmergencyAddress();
+        } else {
+            emAddInput.readOnly = false;
+            emAddInput.value = '';
+            updateEmergencyAddress();
+        }
+    });
+
+    // Photo Preview
+    document.getElementById('inputPhoto').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById('previewImage');
+                img.src = e.target.result;
+                img.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    function populateReview() {
+
+        const getText = (id) => { const el = document.getElementById(id); return el && el.options[el.selectedIndex] ? el.options[el.selectedIndex].text : '-'; };
+        document.getElementById('reviewCourse').innerText = getText('courseSelect');
+        document.getElementById('reviewYear').innerText = getText('yearSelect');
+    }
+
+    document.getElementById('confirmCheck').addEventListener('change', function() {
+        const submitBtn = document.getElementById('submitBtn');
+        const certBox = this.closest('.certification-box');
+        if (this.checked) {
+            submitBtn.disabled = false;
+            certBox.classList.add('checked');
+        } else {
+            submitBtn.disabled = true;
+            certBox.classList.remove('checked');
+        }
+    });
+</script>
+{% endblock %}
+

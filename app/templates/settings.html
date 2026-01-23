@@ -1,0 +1,403 @@
+{% extends "base.html" %}
+
+{% block title %}System Settings{% endblock %}
+
+{% block content %}
+<style>
+     @font-face {
+        font-family: 'Poppins';
+        src: url("{{ url_for('static', filename='fonts/Poppins-Regular.ttf') }}") format('truetype');
+        font-weight: normal; font-style: normal;
+    }
+    @font-face {
+        font-family: 'Poppins';
+        src: url("{{ url_for('static', filename='fonts/Poppins-Bold.ttf') }}") format('truetype');
+        font-weight: bold; font-style: normal;
+    }
+    
+    html, body {
+        height: 100%; margin: 0; overflow: hidden;
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(85deg,rgb(172, 170, 170) 0%, rgb(233, 230, 227) 15%, rgb(241, 237, 237) 50%, rgb(248, 244, 244) 80%, rgb(155, 149, 149) 100%);
+    }
+    
+    .footer { display: none !important; }
+    .container { flex: 1; max-width: 1500px !important; width: 100%;}
+    
+    .settings-card {
+        border: none; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        background: #fff; display: flex; height: 600px; overflow: hidden;
+    }
+    
+    .settings-nav {
+        background-color: #fff; border-right: 1px solid #eee; padding: 20px;
+        flex-shrink: 0; width: 233px; overflow-y: auto;
+    }
+    
+    .settings-content-wrapper { flex-grow: 1; overflow-y: auto;}
+    .settings-content { padding: 30px; }
+    
+    .settings-nav .nav-link { 
+        color: #555 !important; font-weight: 500; padding: 12px 20px; 
+        border-radius: 8px; border-left: 4px solid transparent; transition: all 0.2s; 
+    }
+    
+    .settings-nav .nav-link:hover { 
+        background-color: #f8f9fa; color: #800000 !important; transform: translateX(5px);
+    }
+    
+    .settings-nav .nav-link.active { 
+        background-color: #eef2f7; color: #800000 !important; 
+        border-left-color: #800000; font-weight: 600; 
+    }
+    
+    .nav-icon { margin-right: 10px; width: 20px; text-align: center; }
+    
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+    .color-dot { width: 18px; height: 18px; border-radius: 50%; display: inline-block; border: 2px solid #ffffff; box-shadow: 0 0 0 1px #ddd; vertical-align: middle; margin-right: 4px; }
+    .img-preview { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid #eee; }
+    .table-hover tbody tr:hover { background-color: #fcfcfc; }
+    .action-btn { padding: 4px 10px; font-size: 0.85rem; }
+    .section-badge:hover { background-color: #e2e6ea !important; cursor: pointer; transform: scale(1.05); transition: transform 0.1s; }
+    .table-toolbar { display: flex; justify-content: right; align-items: center; gap: 15px; margin-bottom: 15px; }
+</style>
+
+<div class="container mt-4 mb-5">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="settings-card">
+        <div class="settings-nav d-flex flex-column py-4" style="height: 100%; min-height: 600px;">
+            <div>
+                <h5 class="px-4 mb-4 fw-bold text-uppercase small text-center text-muted ls-1">Settings</h5>
+                <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    <button class="nav-link active" id="tab-org" data-bs-toggle="pill" data-bs-target="#v-pills-org" type="button">
+                        <i class="bi bi-building nav-icon"></i> Organizations
+                    </button>
+                    <button class="nav-link" id="tab-course" data-bs-toggle="pill" data-bs-target="#v-pills-course" type="button">
+                        <i class="bi bi-book nav-icon"></i> Courses
+                    </button>
+                    <button class="nav-link" id="tab-section" data-bs-toggle="pill" data-bs-target="#v-pills-section" type="button">
+                        <i class="bi bi-people nav-icon"></i> Sections
+                    </button>
+                </div>
+            </div>
+            <div class="mt-auto px-3">
+                <hr class="mb-3 opacity-25"> 
+                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-light btn-sm w-100 text-muted border shadow-sm">
+                    <i class="bi bi-arrow-left me-1"></i>Dashboard
+                </a>
+            </div>
+        </div>
+
+        <div class="settings-content-wrapper">
+            <div class="tab-content settings-content" id="v-pills-tabContent">
+                
+                <div class="tab-pane fade show active" id="v-pills-org">
+                    <div class="section-header"><h4 class="mb-0 fw-bold">Manage Organizations</h4></div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light small text-muted text-uppercase">
+                                <tr><th>Logo</th><th>Code</th><th>Theme Colors</th><th>Header BG</th><th class="text-end">Actions</th></tr>
+                            </thead>
+                            <tbody>
+                                {% for org in orgs %}
+                                <tr>
+                                    <td><img src="{{ url_for('static', filename='img/orgs/' + (org.logo_filename if org.logo_filename else 'default.png')) }}" class="img-preview"></td>
+                                    <td class="fw-bold">{{ org.code }}</td>
+                                    <td><span class="color-dot" style="background-color: {{ org.color_primary }};"></span><span class="color-dot" style="background: {{ org.color_gradient }};"></span></td>
+                                    <td>{% if org.header_bg_filename %}<img src="{{ url_for('static', filename='img/orgs/' + org.header_bg_filename) }}" class="img-preview">{% else %}-{% endif %}</td>
+                                    <td class="text-end">
+                                        <button class="btn btn-light action-btn text-primary" onclick='openOrgEdit({{ org.id }}, "{{ org.code }}", "{{ org.name }}", "{{ org.color_primary }}")'><i class="bi bi-pencil-square"></i></button>
+                                        <form action="{{ url_for('admin.delete_org', id=org.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this Org? All courses will be deleted!');">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn btn-light action-btn text-danger"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% else %}<tr><td colspan="5" class="text-center text-muted">No organizations found.</td></tr>{% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-toolbar">
+                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addOrgModal"><i class="bi bi-plus-lg"></i> Add Organization</button>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="v-pills-course">
+                    <div class="section-header"><h4 class="mb-0 fw-bold">Manage Courses</h4></div>
+                    <div class="table-toolbar">
+                        <div class="d-flex align-items-center">
+                            <label class="form-label small text-muted me-2 mb-0">Filter by Org:</label>
+                            <select class="form-select form-select-sm w-auto" id="courseFilter" onchange="filterTable('courseTable', 0)">
+                                <option value="all">All Organizations</option>
+                                {% for org in orgs %}<option value="{{ org.code }}">{{ org.code }}</option>{% endfor %}
+                            </select>
+                        </div>
+                        <button class="btn btn-sm btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#addCourseModal"><i class="bi bi-plus-lg"></i> Add Course</button>
+                    </div>
+                    <table class="table table-hover align-middle" id="courseTable">
+                        <thead class="table-light small text-muted text-uppercase"><tr><th>Org</th><th>Code</th><th>Full Name</th><th class="text-end">Actions</th></tr></thead>
+                        <tbody>
+                            {% for course in courses %}
+                            <tr data-org="{{ course.organization.code }}">
+                                <td><span class="badge text-white" style="background-color: {{ course.organization.color_primary }};">{{ course.organization.code }}</span></td>
+                                <td class="fw-bold">{{ course.code }}</td>
+                                <td>{{ course.name }}</td>
+                                <td class="text-end">
+                                    <button class="btn btn-light action-btn text-primary" onclick='openCourseEdit({{ course.id }}, "{{ course.code }}", "{{ course.name }}", {{ course.org_id }})'><i class="bi bi-pencil-square"></i></button>
+                                    <form action="{{ url_for('admin.delete_course', id=course.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this course? Sections will be removed.');">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-light action-btn text-danger"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}<tr><td colspan="4" class="text-center text-muted">No courses found.</td></tr>{% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="tab-pane fade" id="v-pills-section">
+                    <div class="section-header"><h4 class="mb-0 fw-bold">Manage Sections</h4></div>
+                    <div class="table-toolbar">
+                        <div class="d-flex align-items-center">
+                            <label class="form-label small text-muted me-2 mb-0">Filter by Course:</label>
+                            <select class="form-select form-select-sm w-auto" id="sectionFilter" onchange="filterTable('sectionTable', 0)">
+                                <option value="all">All Courses</option>
+                                {% for course in courses %}<option value="{{ course.code }}">{{ course.code }}</option>{% endfor %}
+                            </select>
+                        </div>
+                        <button class="btn btn-sm btn-primary ms-auto" onclick="openAddSectionModal()"><i class="bi bi-plus-lg"></i> Add Section</button>
+                    </div>
+                    <table class="table table-hover align-middle" id="sectionTable">
+                        <thead class="table-light small text-muted text-uppercase"><tr><th>Course</th><th>Year Level</th><th>Sections</th></tr></thead>
+                        <tbody>
+                            {% for key, group in grouped_sections.items() %}
+                            <tr id="row-{{ group.course_code }}-{{ group.year_level|replace(' ', '') }}" data-course="{{ group.course_code }}">
+                                <td class="fw-bold">{{ group.course_code }}</td>
+                                <td>{{ group.year_level }}</td>
+                                <td class="section-cell">
+                                    {% for sec in group.sections %}
+                                    <span class="badge bg-light text-dark border me-1 mb-1 section-badge" title="Edit/Delete" onclick='openSectionEdit({{ sec.id }}, "{{ sec.name }}", "{{ group.year_level }}", {{ group.course_id }})'>{{ sec.name }}</span>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            {% else %}<tr><td colspan="3" class="text-center text-muted">No sections found.</td></tr>{% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addOrgModal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+        <form action="{{ url_for('admin.add_org') }}" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="modal-header"><h5 class="modal-title fw-bold">Add Org</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <div class="mb-3"><label>Code</label><input type="text" class="form-control" name="code" required></div>
+                <div class="mb-3"><label>Name</label><input type="text" class="form-control" name="name" required></div>
+                <div class="mb-3"><label>Color</label><input type="color" class="form-control w-100" name="color_primary" value="#2c3e50"></div>
+                <div class="mb-3"><label>Header</label><input type="file" class="form-control" name="header_bg"></div>
+                <div class="mb-3"><label>Logo</label><input type="file" class="form-control" name="logo"></div>
+            </div>
+            <div class="modal-footer"><button type="submit" class="btn btn-primary">Save</button></div>
+        </form>
+    </div></div>
+</div>
+
+<div class="modal fade" id="addCourseModal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+        <form action="{{ url_for('admin.add_course') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="modal-header"><h5 class="modal-title fw-bold">Add Course</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <div class="mb-3"><label>Org</label><select class="form-select" name="org_id" required>{% for org in orgs %}<option value="{{ org.id }}">{{ org.code }}</option>{% endfor %}</select></div>
+                <div class="mb-3"><label>Code</label><input type="text" class="form-control" name="code" required></div>
+                <div class="mb-3"><label>Name</label><input type="text" class="form-control" name="name" required></div>
+            </div>
+            <div class="modal-footer"><button type="submit" class="btn btn-primary">Save</button></div>
+        </form>
+    </div></div>
+</div>
+
+<div class="modal fade" id="addSectionModal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+        <form id="addSectionForm" action="{{ url_for('admin.add_section') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="modal-header"><h5 class="modal-title fw-bold">Add Section</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <div class="mb-3"><label>Course</label><select class="form-select" name="course_id" required>{% for course in courses %}<option value="{{ course.id }}">{{ course.code }}</option>{% endfor %}</select></div>
+                <div class="mb-3"><label>Year</label><select class="form-select" name="year_level" required><option>1ST YEAR</option><option>2ND YEAR</option><option>3RD YEAR</option><option>4TH YEAR</option></select></div>
+                <div class="mb-3"><label>Name</label><input type="text" class="form-control" name="name" required placeholder="e.g. 1-2"></div>
+            </div>
+            <div class="modal-footer"><button type="submit" class="btn btn-primary">Save</button></div>
+        </form>
+    </div></div>
+</div>
+
+<div class="modal fade" id="editOrgModal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+        <form id="editOrgForm" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="modal-header"><h5 class="modal-title">Edit Org</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <div class="mb-3"><label>Code</label><input type="text" class="form-control" name="code" id="edit_org_code" required></div>
+                <div class="mb-3"><label>Name</label><input type="text" class="form-control" name="name" id="edit_org_name" required></div>
+                <div class="mb-3"><label>Color</label><input type="color" class="form-control w-100" name="color_primary" id="edit_org_color"></div>
+            </div>
+            <div class="modal-footer"><button type="submit" class="btn btn-primary">Save Changes</button></div>
+        </form>
+    </div></div>
+</div>
+
+<div class="modal fade" id="editCourseModal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+        <form id="editCourseForm" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="modal-header"><h5 class="modal-title">Edit Course</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <div class="mb-3"><label>Org</label><select class="form-select" name="org_id" id="edit_course_org" required>{% for org in orgs %}<option value="{{ org.id }}">{{ org.code }}</option>{% endfor %}</select></div>
+                <div class="mb-3"><label>Code</label><input type="text" class="form-control" name="code" id="edit_course_code" required></div>
+                <div class="mb-3"><label>Name</label><input type="text" class="form-control" name="name" id="edit_course_name" required></div>
+            </div>
+            <div class="modal-footer"><button type="submit" class="btn btn-primary">Save Changes</button></div>
+        </form>
+    </div></div>
+</div>
+
+<div class="modal fade" id="editSectionModal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+        <form id="editSectionForm" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="modal-header"><h5 class="modal-title fw-bold">Edit Section</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <div class="mb-3"><label class="form-label">Course</label><select class="form-select" name="course_id" id="edit_section_course" required>{% for course in courses %}<option value="{{ course.id }}">{{ course.code }}</option>{% endfor %}</select></div>
+                <div class="mb-3"><label class="form-label">Year Level</label><select class="form-select" name="year_level" id="edit_section_year" required><option>1ST YEAR</option><option>2ND YEAR</option><option>3RD YEAR</option><option>4TH YEAR</option></select></div>
+                <div class="mb-3"><label class="form-label">Section Name</label><input type="text" class="form-control" name="name" id="edit_section_name" required></div>
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+                <button type="button" class="btn btn-danger" onclick="deleteSectionViaForm()">Delete</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
+        
+        <form id="hiddenDeleteSectionForm" method="POST" style="display:none;">
+             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        </form>
+    </div></div>
+</div>
+
+<script>
+    // --- 0. UI HELPERS & PERSISTENCE ---
+    document.addEventListener("DOMContentLoaded", function() {
+        // Restore Active Tab
+        const activeTabId = localStorage.getItem('activeSettingsTab');
+        if (activeTabId) {
+            const triggerEl = document.getElementById(activeTabId);
+            if (triggerEl) { new bootstrap.Tab(triggerEl).show(); }
+        }
+        // Save Tab on Click
+        const tabEls = document.querySelectorAll('button[data-bs-toggle="pill"]');
+        tabEls.forEach(tabEl => {
+            tabEl.addEventListener('shown.bs.tab', function (event) {
+                localStorage.setItem('activeSettingsTab', event.target.id);
+            })
+        });
+
+        // Restore Filters
+        const savedCourseFilter = localStorage.getItem('settingsCourseFilter');
+        if (savedCourseFilter) {
+            const el = document.getElementById('courseFilter');
+            if(el) { el.value = savedCourseFilter; filterTable('courseTable', 0); }
+        }
+        const savedSectionFilter = localStorage.getItem('settingsSectionFilter');
+        if (savedSectionFilter) {
+            const el = document.getElementById('sectionFilter');
+            if(el) { el.value = savedSectionFilter; filterTable('sectionTable', 0); }
+        }
+    });
+
+    // --- 1. MODAL OPENERS ---
+    
+    function openAddSectionModal(preCourseId = null, preYear = null) {
+        const modal = new bootstrap.Modal(document.getElementById('addSectionModal'));
+        document.getElementById('addSectionForm').reset();
+        
+        const courseSelect = document.querySelector('#addSectionModal select[name="course_id"]');
+        const filterVal = document.getElementById('sectionFilter').value;
+        
+        if (preCourseId) {
+            courseSelect.value = preCourseId;
+            if(preYear) document.querySelector('#addSectionModal select[name="year_level"]').value = preYear;
+        } else if (filterVal !== "all") {
+            for (let i = 0; i < courseSelect.options.length; i++) {
+                if (courseSelect.options[i].text === filterVal) { courseSelect.selectedIndex = i; break; }
+            }
+        }
+        modal.show();
+    }
+
+    function openOrgEdit(id, code, name, color) {
+        document.getElementById('edit_org_code').value = code;
+        document.getElementById('edit_org_name').value = name;
+        document.getElementById('edit_org_color').value = color;
+        document.getElementById('editOrgForm').action = "/admin/settings/edit_org/" + id;
+        new bootstrap.Modal(document.getElementById('editOrgModal')).show();
+    }
+
+    function openCourseEdit(id, code, name, orgId) {
+        document.getElementById('edit_course_code').value = code;
+        document.getElementById('edit_course_name').value = name;
+        document.getElementById('edit_course_org').value = orgId;
+        document.getElementById('editCourseForm').action = "/admin/settings/edit_course/" + id;
+        new bootstrap.Modal(document.getElementById('editCourseModal')).show();
+    }
+
+    function openSectionEdit(id, name, year, courseId) {
+        document.getElementById('edit_section_name').value = name;
+        document.getElementById('edit_section_year').value = year;
+        document.getElementById('edit_section_course').value = courseId;
+        document.getElementById('editSectionForm').action = "/admin/settings/edit_section/" + id;
+        
+        // Link the delete button to this specific section ID
+        document.getElementById('hiddenDeleteSectionForm').action = "/admin/settings/delete_section/" + id;
+        
+        new bootstrap.Modal(document.getElementById('editSectionModal')).show();
+    }
+
+    // --- 2. DELETE LOGIC ---
+    function deleteSectionViaForm() {
+        if(!confirm("Are you sure you want to delete this section?")) return;
+        document.getElementById('hiddenDeleteSectionForm').submit();
+    }
+
+    // --- 3. FILTER LOGIC ---
+    function filterTable(tableId, cellIndex) {
+        const filterEl = document.getElementById(tableId === 'courseTable' ? 'courseFilter' : 'sectionFilter');
+        const filterVal = filterEl.value.toUpperCase();
+        
+        if (tableId === 'courseTable') localStorage.setItem('settingsCourseFilter', filterEl.value);
+        else localStorage.setItem('settingsSectionFilter', filterEl.value);
+
+        const rows = document.getElementById(tableId).getElementsByTagName("tr");
+        for (let i = 1; i < rows.length; i++) {
+            let td = rows[i].getElementsByTagName("td")[cellIndex];
+            if (td) {
+                let txt = td.textContent || td.innerText;
+                rows[i].style.display = (filterVal === "ALL" || txt.toUpperCase().trim() === filterVal) ? "" : "none";
+            }
+        }
+    }
+</script>
+{% endblock %}

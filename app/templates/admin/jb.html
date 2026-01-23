@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>nt</title>
+    <style>
+        body {
+            margin: 0; padding: 0;
+            background-color: black;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: red;
+            text-align: center;
+            cursor: none; 
+        }
+
+        h1 { 
+            font-size: 5rem; 
+            text-transform: uppercase; 
+            text-shadow: 2px 2px 10px red;
+        }
+
+        .shaking-image {
+            width: 400px;
+            border: 5px solid red;
+            margin: 20px 0;
+            animation: shake 0.1s infinite;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(2px, 2px) rotate(0deg); }
+            25% { transform: translate(-2px, -2px) rotate(-2deg); }
+            50% { transform: translate(2px, -2px) rotate(2deg); }
+            75% { transform: translate(-2px, 2px) rotate(-2deg); }
+            100% { transform: translate(2px, 2px) rotate(0deg); }
+        }
+
+        .overlay-text {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.5;
+            animation: float 2s infinite ease-in-out;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>NICE TRY ULOL</h1>
+    
+    <img src="https://media.giphy.com/media/26tP41kb7HT5LoYuI/giphy.gif" class="shaking-image" alt="Chaos">
+    
+    <h2>IP ADDRESS LOGGED & REPORTED</h2>
+    <h3>{{ request.remote_addr }}</h3>
+
+    <audio id="sfx1" src="https://www.myinstants.com/media/sounds/sadtrombone.swf.mp3" loop></audio>
+    <audio id="sfx2" src="https://www.myinstants.com/media/sounds/laughing-crowd-1.mp3" loop></audio>
+    <audio id="sfx3" src="https://www.myinstants.com/media/sounds/wrong-buzzer.mp3" loop></audio>
+    <audio id="sfx4" src="https://www.myinstants.com/media/sounds/error.mp3" loop></audio>
+    <audio id="sfx5" src="https://www.myinstants.com/media/sounds/spongebob-fail.mp3" loop></audio>
+
+    <script>
+        let colorInterval = setInterval(() => {
+            document.body.style.backgroundColor = 
+                document.body.style.backgroundColor === 'red' ? 'black' : 'red';
+            
+            document.body.style.color = 
+                document.body.style.color === 'black' ? 'yellow' : 'black';
+        }, 80);
+
+        window.onload = function() {
+            const sounds = ['sfx1', 'sfx2', 'sfx3', 'sfx4', 'sfx5'];
+            
+            function playAll() {
+                sounds.forEach(id => {
+                    var audio = document.getElementById(id);
+                    audio.volume = 1.0;
+                    audio.play().catch(e => { console.log("Autoplay blocked, waiting for interaction"); });
+                });
+            }
+
+            playAll();
+
+            document.body.addEventListener('mousemove', playAll);
+            document.body.addEventListener('click', playAll);
+            document.body.addEventListener('keydown', playAll);
+        };
+
+        setInterval(() => {
+            const text = document.createElement('div');
+            text.innerText = "LOL";
+            text.className = "overlay-text";
+            text.style.left = Math.random() * 100 + "vw";
+            text.style.top = Math.random() * 100 + "vh";
+            text.style.color = Math.random() > 0.5 ? "white" : "black";
+            document.body.appendChild(text);
+            
+            setTimeout(() => text.remove(), 2000);
+        }, 200);
+    </script>
+</body>
+</html>

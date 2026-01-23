@@ -1,0 +1,13 @@
+
+.venv/
+env/
+.env
+
+instance/
+*.db
+secrets.json
+
+__pycache__/
+*.pyc
+
+.DS_Store

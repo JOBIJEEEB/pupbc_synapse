@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Student - {{ student.first_name }}{% endblock %}
+
+{% block content %}
+<style>
+    html, body {
+        height: 100vh;      
+        margin: 0;
+        overflow: hidden;  
+        font-family: 'Poppins', sans-serif;
+        background: #f0f2f5;
+    }
+
+    .main-content {
+        height: calc(100vh - 70px); 
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .bento-card {
+        background: #fff;
+        border-radius: 16px;
+        width: 100%;
+        max-width: 1100px;
+        height: 100%;
+        max-height: 650px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+
+    .card-header {
+        {% if org and org.header_bg_filename %}
+            background-image: url("{{ url_for('static', filename='img/orgs/' + org.header_bg_filename) }}");
+            background-size: cover;
+            background-position: center;
+        {% else %}
+            background-color: #800000 !important;
+        {% endif %}
+        padding: 15px 30px;
+        border-radius: 16px 16px 0 0;
+    }
+
+    .bento-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 15px;
+        padding: 20px;
+        flex-grow: 1;
+        overflow: hidden;
+    }
+
+    .bento-panel {
+        background: #fcfcfc;
+        border: 1px solid #eaeaea;
+        border-radius: 12px;
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .panel-title {
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: #800000;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
+    }
+
+    .form-label { font-size: 0.65rem; font-weight: 700; color: #888; margin-bottom: 2px; }
+    .form-control-sm, .form-select-sm { font-size: 0.8rem; border-radius: 6px; }
+
+    /* Photo Panel specific */
+    .photo-well {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+</style>
+
+<div class="main-content">
+    <form method="POST" enctype="multipart/form-data" class="bento-card">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="card-header text-white d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-0 fw-bold"><i class="bi bi-pencil-square me-2"></i> Edit Student</h5>
+                <small style="font-size: 0.7rem; opacity: 0.9;">{{ student.student_number }} | {{ student.last_name }}, {{ student.first_name }}</small>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{{ url_for('admin.view_course', course_name=student.course) }}" class="btn btn-sm btn-outline-light border-0">Cancel</a>
+                <button type="submit" class="btn btn-success btn-sm px-4 fw-bold">Save Changes</button>
+            </div>
+        </div>
+
+        <div class="bento-grid">
+            <div class="bento-panel">
+                <div class="panel-title">Profile Identity</div>
+                <div class="photo-well">
+                    {% set photo_url = url_for('static', filename=student.photo_filename) if student.photo_filename else url_for('static', filename='img/default_user.png') %}
+                    <img id="photoPreview" src="{{ photo_url }}" class="rounded-circle border shadow-sm mb-3" style="width: 110px; height: 110px; object-fit: cover; background: #fff;">
+                    <label class="btn btn-dark btn-sm w-100" style="font-size: 0.7rem;">
+                        <i class="bi bi-camera me-1"></i> Replace Photo
+                        <input type="file" name="photo" style="display: none;" onchange="previewImage(this)">
+                    </label>
+                    <div class="mt-3 w-100">
+                        <label class="form-label">Student Number</label>
+                        <input type="text" name="student_number" class="form-control form-control-sm fw-bold" value="{{ student.student_number }}" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bento-panel">
+                <div class="panel-title">Personal Information</div>
+                <div class="row g-2">
+                    <div class="col-md-4"><label class="form-label">First Name</label><input type="text" name="first_name" class="form-control form-control-sm" value="{{ student.first_name }}" required></div>
+                    <div class="col-md-4"><label class="form-label">Middle</label><input type="text" name="middle_name" class="form-control form-control-sm" value="{{ student.middle_name }}"></div>
+                    <div class="col-md-4"><label class="form-label">Last Name</label><input type="text" name="last_name" class="form-control form-control-sm" value="{{ student.last_name }}" required></div>
+                    <div class="col-md-8"><label class="form-label">Email Address</label><input type="email" name="email" class="form-control form-control-sm" value="{{ student.email }}" required></div>
+                    <div class="col-md-4"><label class="form-label">Birthdate</label><input type="date" name="birthdate" class="form-control form-control-sm" value="{{ student.birthdate }}" required></div>
+                    <div class="col-md-12"><label class="form-label">Residential Address</label><input type="text" name="residential_address" class="form-control form-control-sm" value="{{ student.residential_address }}" required></div>
+                </div>
+            </div>
+
+            <div class="bento-panel">
+                <div class="panel-title">Academic Details</div>
+                <div class="row g-2">
+                    <div class="col-md-12"><label class="form-label">Organization</label><select name="organization" id="orgSelect" class="form-select form-select-sm" required></select></div>
+                    <div class="col-md-12"><label class="form-label">Course</label><select name="course" id="courseSelect" class="form-select form-select-sm" required></select></div>
+                    <div class="col-md-6"><label class="form-label">Year Level</label><select name="year_level" id="yearSelect" class="form-select form-select-sm" required>
+                        <option value="1ST YEAR">1ST YEAR</option><option value="2ND YEAR">2ND YEAR</option><option value="3RD YEAR">3RD YEAR</option><option value="4TH YEAR">4TH YEAR</option>
+                    </select></div>
+                    <div class="col-md-6"><label class="form-label">Section</label><select name="section" id="sectionSelect" class="form-select form-select-sm" required></select></div>
+                </div>
+            </div>
+
+            <div class="bento-panel">
+                <div class="panel-title">Emergency Contact</div>
+                <div class="row g-2">
+                    <div class="col-md-12"><label class="form-label">Contact Person</label><input type="text" name="emergency_contact_name" class="form-control form-control-sm" value="{{ student.emergency_contact_name }}" required></div>
+                    <div class="col-md-12"><label class="form-label">Contact Number</label><input type="text" name="emergency_contact_number" class="form-control form-control-sm" value="{{ student.emergency_contact_number }}" required></div>
+                    <div class="col-md-12"><label class="form-label">Emergency Address</label><textarea name="emergency_address" class="form-control form-control-sm" rows="2" required>{{ student.emergency_address }}</textarea></div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = (e) => document.getElementById('photoPreview').src = e.target.result;
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    const dbOrgData = {{ org_data_json | safe }};
+    const dbSectionData = {{ section_data_json | safe }};
+    const currentOrg = "{{ student.organization }}", currentCourse = "{{ student.course }}", currentYear = "{{ student.year_level }}", currentSection = "{{ student.section }}";
+    const orgSelect = document.getElementById('orgSelect'), courseSelect = document.getElementById('courseSelect'), yearSelect = document.getElementById('yearSelect'), sectionSelect = document.getElementById('sectionSelect');
+
+    document.addEventListener('DOMContentLoaded', () => {
+        populateOrgs();
+        orgSelect.value = currentOrg;
+        updateCourses();
+        for (let i=0; i < courseSelect.options.length; i++) {
+            if (courseSelect.options[i].value === currentCourse || courseSelect.options[i].text === currentCourse) { courseSelect.selectedIndex = i; break; }
+        }
+        yearSelect.value = currentYear;
+        updateSections();
+        sectionSelect.value = currentSection;
+    });
+
+    function populateOrgs() {
+        orgSelect.innerHTML = '<option value="">Select Org</option>';
+        Object.keys(dbOrgData).forEach(org => { let opt = document.createElement('option'); opt.value = org; opt.textContent = org; orgSelect.appendChild(opt); });
+    }
+    function updateCourses() {
+        const selectedOrg = orgSelect.value;
+        courseSelect.innerHTML = '<option value="">Select Course</option>';
+        if (dbOrgData[selectedOrg]) { dbOrgData[selectedOrg].courses.forEach(c => { let opt = document.createElement('option'); opt.value = c.code; opt.textContent = c.name; courseSelect.appendChild(opt); }); }
+        updateSections();
+    }
+    function updateSections() {
+        const c = courseSelect.value, y = yearSelect.value;
+        sectionSelect.innerHTML = '<option value="">Select Section</option>';
+        if (dbSectionData[c] && dbSectionData[c][y]) { dbSectionData[c][y].sort().forEach(s => { let opt = document.createElement('option'); opt.value = s; opt.textContent = s; sectionSelect.appendChild(opt); }); }
+    }
+    orgSelect.addEventListener('change', updateCourses);
+    courseSelect.addEventListener('change', updateSections);
+    yearSelect.addEventListener('change', updateSections);
+</script>
+{% endblock %}

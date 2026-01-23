@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACES Synapse</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/orgs/ACES.png') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <style>
+        @font-face {
+            font-family: 'Poppins';
+            src: url("{{ url_for('static', filename='fonts/Poppins-Regular.ttf') }}") format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Poppins';
+            src: url("{{ url_for('static', filename='fonts/Poppins-Bold.ttf') }}") format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        /* --- GLOBAL STYLES --- */
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #000;
+            overflow-x: hidden; /* Prevent horizontal scroll from animations */
+        }
+
+        /* HERO SECTION */
+        .hero-section {
+            /* Elegant Black -> Maroon -> Red Gradient */
+            background: linear-gradient(125deg, #1b0d0d 20%, #3e0000 60%, #7a0000 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        /* ANIMATION 1: Moving Digital Grid (Scanlines) */
+        .hero-section::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            /* Thin, subtle grid lines */
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.4;
+            animation: scanline 15s linear infinite;
+            pointer-events: none;
+        }
+        
+
+        .hero-section::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.2) 1px, transparent 1px);
+            background-size: 60px 60px;
+            opacity: 0.3;
+            animation: particle-drift 25s linear infinite;
+            pointer-events: none;
+        }
+
+
+        .content-container {
+            position: relative; 
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            max-width: 750px;
+            width: 100%;
+            padding: 4.5rem 3rem;
+            border-radius: 24px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+            transition: transform 0.3s ease;
+        }
+        
+        /* Student Button - Gold Gradient */
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #FFD700 0%, #daa520 100%);
+            color: #3e0000; /* Deep Maroon Text */
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px; /* Pill Shape */
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary-custom:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(135deg, #ffe033 0%, #ffd633 100%);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+            color: #000;
+        }
+
+        /* Admin Button - Elegant Outline */
+        .btn-outline-custom {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.9);
+            padding: 15px 40px;
+            border-radius: 50px; /* Pill Shape */
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+        .btn-outline-custom:hover {
+            border-color: #fff;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Typography */
+        h1 { 
+            font-size: 3.5rem;
+            letter-spacing: -0.6px; 
+            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        .lead { 
+            font-weight: normal; 
+            opacity: 0.85; 
+            color: #f1f1f1;
+            margin-bottom: 3rem !important;
+        }
+
+        /* Footer */
+        .footer-text {
+            margin-top: 4rem;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.4);
+            
+            letter-spacing: 2px;
+        }
+
+        /* Logo Shadow */
+        .logo-shadow {
+            filter: drop-shadow(0 0 25px rgba(0,0,0,0.6));
+        }
+
+        /* --- ANIMATIONS (Keyframes) --- */
+        .animate-fade-in { animation: fadeIn 1.2s cubic-bezier(0.19, 1, 0.22, 1); }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Background Grid Movement */
+        @keyframes scanline {
+            0% { background-position: 0 0; }
+            100% { background-position: 50px 50px; }
+        }
+        
+        /* Floating Particles Movement */
+        @keyframes particle-drift {
+            0% { background-position: 0 0; }
+            100% { background-position: 60px 120px; }
+        }
+
+        /* --- MOBILE OPTIMIZATION --- */
+        @media (max-width: 768px) {
+            .content-container {
+                padding: 3rem 1.5rem;
+                width: 95%;
+            }
+            .logo-shadow { width: 100px !important; }
+            h1 { font-size: 2.2rem; }
+            p.lead { font-size: 0.9rem; margin-bottom: 2rem !important; }
+
+            .d-grid { display: grid; width: 100%; gap: 1rem !important; }
+            .btn-primary-custom, .btn-outline-custom {
+                width: 100%;
+                padding: 15px; 
+            }
+            .footer-text { margin-top: 3rem; font-size: 0.65rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hero-section">
+        <div class="content-container animate-fade-in">
+            
+            <div class="mb-4">
+                <img src="{{ url_for('static', filename='img/orgs/ACES.png') }}" alt="ACES Logo" class="logo-shadow" style="width: 140px; height: auto;">
+            </div>
+
+            <h1>ACES SYNAPSE</h1>
+            <p class="lead">
+                The Official Student ID Processing System <br class="d-none d-sm-block">
+                of the Association of Computer Engineering Students - PUPBC
+            </p>
+
+            <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                <a href="{{ url_for('student.register') }}" class="btn btn-primary-custom">
+                    <i class="bi bi-person-plus-fill me-2"></i> Student Registration
+                </a>
+                
+                <a href="{{ url_for('admin.login') }}" class="btn btn-outline-custom">
+                    <i class="bi bi-shield-lock-fill me-2"></i> Admin Login
+                </a>
+            </div>
+
+            <div class="footer-text">
+                <p>&copy; <i>2026 ASSOCIATION OF COMPUTER ENGINEERING STUDENTS-PUPBC <br> Ver. 2.0.1-beta2.</p></i>
+            </div>
+            
+        </div>
+    </div>
+
+</body>
+</html>

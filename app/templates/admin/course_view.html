@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+
+{% block title %}View Course - {{ course_name }}{% endblock %}
+
+{% block content %}
+<style>
+    /* --- FONTS --- */
+    @font-face {
+        font-family: 'Poppins';
+        src: url("{{ url_for('static', filename='fonts/Poppins-Regular.ttf') }}") format('truetype');
+    }
+    @font-face {
+        font-family: 'Poppins';
+        src: url("{{ url_for('static', filename='fonts/Poppins-Bold.ttf') }}") format('truetype');
+        font-weight: bold;
+    }
+
+    html, body {
+        height: 100vh;      
+        margin: 0;
+        overflow: hidden;  
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(85deg,rgb(172, 170, 170) 0%, rgb(233, 230, 227) 15%, rgb(241, 237, 237) 50%, rgb(248, 244, 244) 80%, rgb(155, 149, 149) 100%);
+    }
+
+    .dashboard-wrapper {
+        display: flex;
+        height: calc(100vh - 70px); 
+        width: 100%;
+    }
+
+    /* --- SIDEBAR STYLES --- */
+    .sidebar-container {
+        width: 250px;
+        flex-shrink: 0;
+        background: #fff;
+        border-right: 1px solid rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        z-index: 10;
+        padding: 20px 0 0 0;
+    }
+
+    .sidebar-nav-content {
+        flex-grow: 1;
+        overflow-y: auto;
+    }
+
+    .nav-year-header {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: #800000;
+        font-weight: 800;
+        padding: 15px 20px 5px 20px;
+    }
+
+    .nav-section-btn {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        text-align: left;
+        padding: 10px 20px;
+        color: #555;
+        background: none;
+        border: none;
+        font-size: 0.85rem;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .nav-section-btn:hover, .nav-section-btn.active {
+        background: rgba(128, 0, 0, 0.05);
+        color: #800000;
+        font-weight: 600;
+    }
+
+    /* --- MAIN CONTENT --- */
+    .main-content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+        padding: 25px;
+    }
+
+    .card {
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
+        width: 100%; 
+        height: 100%; 
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: #fff;
+    }
+
+    /* DYNAMIC HEADER BACKGROUND */
+    .card-header {
+        {% if org and org.header_bg_filename %}
+            background-image: url("{{ url_for('static', filename='img/orgs/' + org.header_bg_filename) }}");
+            background-size: cover;
+            background-position: center;
+        {% else %}
+            background-color: #800000 !important;
+        {% endif %}
+        border-bottom: none;
+        padding: 20px 25px;
+    }
+
+    .table-scroll-wrapper {
+        flex-grow: 1;
+        overflow-y: auto;   
+    }
+
+    /* SWAPPED HEADER STYLING */
+    .group-header th {
+        font-size: 0.75rem !important; 
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        padding: 12px 20px;
+        color: #888;
+        background-color: #fff;
+        border-bottom: 1px solid #eee;
+    }
+
+    .action-bar {
+        background: #fff;
+        padding: 15px 25px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .sidebar-footer {
+        padding: 15px;
+        border-top: 1px solid #eee;
+        background: #fff;
+    }
+</style>
+
+<div class="dashboard-wrapper container">
+    <div class="sidebar-container shadow-sm py-5 my-4 rounded">
+        <div class="sidebar-nav-content">
+            <h6 class="fw-bold text-muted small text-uppercase mb-3 px-4">Navigation</h6>
+            <div class="px-3 mb-2">
+                <button onclick="showAll()" class="nav-section-btn active w-100" id="btnShowAll" style="border-radius: 8px;">
+                    <i class="bi bi-grid-3x3-gap-fill me-2"></i> Show All Students
+                </button>
+            </div>
+            
+            {% for year, sections in grouped_data.items() %}
+                <div class="nav-year-header">{{ year }}</div>
+                {% for section in sections.keys() %}
+                    <button onclick="filterBySection('{{ year }}', '{{ section }}', this)" class="nav-section-btn">
+                        <i class="bi bi-folder-fill me-2 opacity-50"></i> Section {{ section }}
+                    </button>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        <div class="sidebar-footer">
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-light btn-sm w-100 py-2 border shadow-sm text-muted fw-bold d-flex align-items-center justify-content-center">
+                <i class="bi bi-arrow-left me-2"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="card shadow-sm">
+            <div class="card-header text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0 fw-bold text-uppercase">
+                            <i class="bi bi-mortarboard-fill me-2"></i> {{ course_name }}
+                        </h5>
+                        <span class="badge bg-light text-dark mt-1" id="currentViewLabel" style="font-size: 0.7rem; font-weight: normal; opacity: 0.9;">Masterlist (Showing All)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <form action="{{ url_for('admin.batch_print') }}" method="POST" target="_blank" id="bulkForm" class="d-flex flex-column h-100">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="action-bar row align-items-center m-0">
+                        <div class="col-md-6">
+                            <div class="input-group" style="max-width: 400px;">
+                                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                                <input type="text" id="searchInput" class="form-control border-start-0 ps-0 shadow-none" placeholder="Search name or ID..." onkeyup="filterSearch()">
+                            </div>
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-end gap-2">
+                            <button type="submit" formaction="{{ url_for('admin.delete_bulk') }}" formtarget="_self"
+                                    class="btn btn-outline-danger btn-sm px-3" onclick="return confirm('Permanently delete selected records?')">
+                                <i class="bi bi-trash3"></i> Delete
+                            </button>
+                            <button type="submit" class="btn btn-success btn-sm px-3 fw-bold">
+                                <i class="bi bi-printer-fill me-1"></i> Batch Print IDs
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-scroll-wrapper">
+                        <table class="table table-hover align-middle mb-0" id="studentTable">
+                            <tbody>
+                                {% for year, sections in grouped_data.items() %}
+                                    {% for section, students in sections.items() %}
+                                        
+                                        <tr class="group-header" data-year="{{ year }}" data-section="{{ section }}">
+                                            <td colspan="5" class="py-2 px-3 border-0" style="background-color: #fcfcfc;">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span class="small fw-bold text-danger">
+                                                        <i class="bi bi-tag-fill me-1"></i> {{ year }} | SECTION {{ section }}
+                                                    </span>
+                                                    <a href="{{ url_for('admin.export_csv_filtered', year=year, section=section, course_name=course_name) }}" 
+                                                       class="btn btn-link btn-sm text-decoration-none text-success fw-bold p-0">
+                                                        <i class="bi bi-file-earmark-arrow-down me-1"></i> Export Section CSV
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="group-header table-light" data-year="{{ year }}" data-section="{{ section }}">
+                                            <th style="width: 50px;" class="text-center"><input type="checkbox" class="form-check-input" id="selectAll"></th>
+                                            <th style="width: 80px;">PHOTO</th>
+                                            <th style="width: 150px;">STUDENT #</th>
+                                            <th>FULL NAME</th>
+                                            <th class="text-end pe-4">MANAGE</th>
+                                        </tr>
+                                        
+                                        {% for s in students %}
+                                        <tr class="student-row" data-year="{{ year }}" data-section="{{ section }}">
+                                            <td class="text-center">
+                                                <input type="checkbox" name="student_ids" value="{{ s.id }}" class="form-check-input student-check">
+                                            </td>
+                                            <td>
+                                                {% if s.photo_filename %}
+                                                    <img src="{{ url_for('static', filename=s.photo_filename) }}" class="rounded shadow-sm" width="40" height="40" style="object-fit: cover;">
+                                                {% else %}
+                                                    <div class="rounded bg-light text-muted d-flex align-items-center justify-content-center border" style="width:40px; height:40px;">
+                                                        <i class="bi bi-person-fill"></i>
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                            <td class="fw-bold">{{ s.student_number }}</td>
+                                            <td>
+                                                <div class="fw-bold text-dark">{{ s.last_name }}, {{ s.first_name }}</div>
+                                                <div class="text-muted" style="font-size: 0.75rem;">{{ s.email }}</div>
+                                            </td>
+                                            <td class="text-end pe-4">
+                                                <div class="btn-group shadow-sm">
+                                                    <a href="{{ url_for('admin.generate_id', id=s.id) }}" target="_blank" class="btn btn-sm btn-white border"><i class="bi bi-printer text-success"></i></a>
+                                                    <a href="{{ url_for('admin.edit_student', id=s.id) }}" class="btn btn-sm btn-white border"><i class="bi bi-pencil-square text-primary"></i></a>
+                                                    <button type="submit" form="bulkForm" formaction="{{ url_for('admin.delete_student', id=s.id) }}" 
+                                                            class="btn btn-sm btn-white border" onclick="return confirm('Delete student?');">
+                                                        <i class="bi bi-trash text-danger"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% endfor %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </form> 
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function filterBySection(year, section, btnElement) {
+        document.querySelectorAll('.nav-section-btn, #btnShowAll').forEach(b => b.classList.remove('active'));
+        btnElement.classList.add('active');
+        document.getElementById('currentViewLabel').innerText = `Viewing: ${year} - Section ${section}`;
+
+        document.querySelectorAll('.group-header').forEach(h => {
+            h.style.display = (h.dataset.year === year && h.dataset.section === section) ? "" : "none";
+        });
+        document.querySelectorAll('.student-row').forEach(r => {
+            r.style.display = (r.dataset.year === year && r.dataset.section === section) ? "" : "none";
+        });
+    }
+
+    function showAll() {
+        document.querySelectorAll('.nav-section-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('btnShowAll').classList.add('active');
+        document.getElementById('currentViewLabel').innerText = "Masterlist (Showing All)";
+        document.querySelectorAll('.group-header, .student-row').forEach(el => el.style.display = "");
+    }
+
+    function filterSearch() {
+        const input = document.getElementById('searchInput').value.toLowerCase();
+        document.querySelectorAll('.student-row').forEach(row => {
+            const name = row.querySelector('.text-dark').innerText.toLowerCase();
+            const num = row.querySelector('.fw-bold').innerText.toLowerCase();
+            row.style.display = (name.includes(input) || num.includes(input)) ? "" : "none";
+        });
+    }
+
+    document.getElementById('selectAll').addEventListener('change', function() {
+        document.querySelectorAll('.student-check').forEach(cb => {
+            if(cb.closest('tr').style.display !== 'none') cb.checked = this.checked;
+        });
+    });
+</script>
+{% endblock %}
