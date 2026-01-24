@@ -4,9 +4,6 @@
 
 {% block content %}
 <style>
-    /* ==========================================================================
-       1. FONTS & GLOBAL VARIABLES
-       ========================================================================== */
     @font-face {
         font-family: 'Poppins';
         src: url("{{ url_for('static', filename='fonts/Poppins-Regular.ttf') }}") format('truetype');
@@ -51,9 +48,6 @@
         width: 100%;
     }
 
-    /* ==========================================================================
-       2. REGISTRATION FORM LAYOUT
-       ========================================================================== */
     .card-body-flex {
         display: flex;
         flex-direction: column;
@@ -88,7 +82,6 @@
         border-top: 1px solid #eee; 
     }
 
-    /* --- Stepper (Dynamic Colors) --- */
     .step-indicator {
         display: flex;
         justify-content: space-between;
@@ -109,25 +102,23 @@
     .step {
         width: 35px; height: 35px;
         border-radius: 50%;
-        background-color: #e9ecef; /* Default Gray (Pending) */
+        background-color: #e9ecef; 
         color: #6c757d;
         display: flex;
         align-items: center; justify-content: center;
         font-weight: bold;
         position: relative; z-index: 2;
         border: 2px solid #fff; 
-        transition: all 0.4s ease; /* Smooth transition for everything */
+        transition: all 0.4s ease;
     }
-    
-    /* Active State: Will get thick outline via JS */
+
      .step.active {
         color: white;
-        background-color: #2c3e50; /* Fallback Dark Blue */
+        background-color: #2c3e50; 
         transform: scale(1.15); 
-        box-shadow: 0 0 0 5px rgba(44, 62, 80, 0.2); /* Default Glow */
+        box-shadow: 0 0 0 5px rgba(44, 62, 80, 0.2);
     }
-    
-    /* Completed State: Will get Org Color via JS */
+
     .step.completed {
         color: white;
     }
@@ -144,9 +135,6 @@
         to { opacity: 1; transform: translateY(0); }
     }
 
-    /* ==========================================================================
-       3. INPUT FIELDS & FOCUS SYNC
-       ========================================================================== */
     label, .form-label {
         font-size: 0.85rem;
         font-weight: 600;
@@ -192,7 +180,6 @@
         border-bottom-left-radius: 0;
     }
 
-    /* Focus States */
     .form-control:focus, .form-select:focus {
         border-color: #000000;
         box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
@@ -227,9 +214,6 @@
         border-color: #080808;
     }
 
-    /* ==========================================================================
-       4. CUSTOM DROPDOWN (ORG SELECT)
-       ========================================================================== */
     .org-logo {
         width: 24px;
         height: 24px;
@@ -267,9 +251,6 @@
         cursor: pointer;
     }
 
-    /* ==========================================================================
-       5. CARD & HEADER STYLING
-       ========================================================================== */
     .card {
         border: none;
         border-radius: 12px;
@@ -297,23 +278,18 @@
         transition: background-color 0.5s ease, border-color 0.5s ease;
     }
 
-    /* DYNAMIC GRADIENT TEXT SETUP */
+
     .section-title {
-        font-weight: bolder; /* Thicker font makes gradients look better */
-        /* Magic properties for gradient text */
+        font-weight: bolder; 
         background-clip: text;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        
-        /* Default Fallback Gradient */
+
         background-image: linear-gradient(180deg, #1d1d1d, #19191a);
         
         transition: background-image 0.5s ease-in-out;
     }
 
-    /* ==========================================================================
-       6. CERTIFICATION BOX
-       ========================================================================== */
     .certification-box {
         background-color: #fff3cd; 
         border: 2px solid #ffecb5;
@@ -361,9 +337,6 @@
         color: #0f5132; 
     }
 
-    /* ==========================================================================
-       7. ID CARD PREVIEW
-       ========================================================================== */
     .id-card-wrapper {
         position: sticky;
         top: 20px;
@@ -405,7 +378,6 @@
     .id-bg { width: 100%; height: 100%; object-fit: fill; position: absolute; top: 0; left: 0; z-index: 1; }
     .id-content { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; }
 
-    /* Front Positioning */
     .photo-area {
         position: absolute; top: 113px; left: 198px;
         transform: translateX(-50%); width: 166px; height: 166px;
@@ -440,30 +412,87 @@
     .b-validity-name { top: 325px; width: 100%; text-align: center; font-size: 13px; font-weight: 900; text-transform: uppercase; }
     .b-validity-period { top: 368px; width: 100%; text-align: center; font-size: 13px; font-weight: bolder; text-transform: uppercase; }
 
-    @media (max-width: 768px) {
-        .container { padding: 0 10px; }
-        .col-lg-7, .col-lg-5 { padding: 0 5px; }
-        .card-body-flex, .card-header { padding: 15px; }
-        
-        /* Reset fixed height on mobile */
+    @media (max-width: 991px) {
+        html, body {
+            height: auto !important;       
+            overflow-y: auto !important;   
+            display: block !important;     
+        }
+
+        .container { 
+            padding: 10px; 
+            max-width: 100%;
+            height: auto !important;      
+        }
         .card {
-            height: auto; 
-            overflow: visible;
+            height: auto !important; 
+            overflow: visible !important;
+            margin-bottom: 80px; 
+        }
+
+        .card-body-flex {
+            padding: 15px;
+            overflow-y: visible;
+            height: auto !important;
+        }
+
+        .step-indicator { 
+            padding: 0 5px; 
+            margin-bottom: 25px; 
         }
         
+        .step {
+            width: 30px; height: 30px; 
+            font-size: 0.9rem;
+        }
+
+        .form-control, .form-select, .input-group-text {
+            font-size: 16px !important; 
+        }
+
         .id-card-wrapper {
-            position: static; 
-            margin-top: 40px;    
-            margin-bottom: 50px; 
+            position: relative; 
+            margin-top: 20px;    
+            margin-bottom: 40px; 
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         
         .pup-id-card {
-            transform: scale(0.9); 
+            transform: scale(0.85); 
             transform-origin: top center;
-            margin-bottom: -40px; 
+            margin-bottom: -60px; 
         }
         
-        .step-indicator { padding: 0; margin-bottom: 20px; }
+        .button-container {
+            position: relative;
+            background: #fff;
+            z-index: 10;
+            padding-bottom: 10px;
+        }
+        
+        .custom-dropdown-toggle {
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+
+    @media (max-width: 380px) {
+        .pup-id-card {
+            transform: scale(0.75); 
+            margin-bottom: -100px;
+        }
+    }
+
+    @media (max-width: 380px) {
+        .pup-id-card {
+            transform: scale(0.75);
+            margin-bottom: -100px;
+        }
     }
 </style>
 
