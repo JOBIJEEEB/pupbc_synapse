@@ -9,6 +9,7 @@ import csv
 import io
 from flask import Response, stream_with_context
 from functools import wraps
+from datetime import datetime
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -134,17 +135,19 @@ def logout():
 @login_required
 def edit_student(id):
     student = Student.query.get_or_404(id)
-
     if request.method == 'POST':
         try:
-
             student.first_name = request.form['first_name']
             student.middle_name = request.form['middle_name']
             student.last_name = request.form['last_name']
             student.student_number = request.form['student_number']
             student.email = request.form['email']
             student.residential_address = request.form['residential_address']
-            student.birthdate = request.form['birthdate']
+            
+            birthdate_str = request.form['birthdate']
+            if birthdate_str:
+                student.birthdate = datetime.strptime(birthdate_str, '%Y-%m-%d').date()
+
             student.organization = request.form['organization']
             student.course = request.form['course']
             student.year_level = request.form['year_level']
@@ -160,22 +163,15 @@ def edit_student(id):
                     save_path = os.path.join(current_app.root_path, 'static/uploads', filename)
                     file.save(save_path)
                     student.photo_filename = 'uploads/' + filename
-
             db.session.commit()
             flash('Student updated successfully!', 'success')
             return redirect(url_for('admin.view_course', course_name=student.course))
-
         except Exception as e:
             db.session.rollback()
             flash(f'Error updating student: {str(e)}', 'danger')
 
     orgs = Organization.query.order_by(Organization.code).all()
-    org_data = {}
-    for org in orgs:
-        courses = []
-        for course in org.courses:
-            courses.append({"code": course.code, "name": course.name})
-        org_data[org.code] = {"courses": courses}
+    org_data = {org.code: {"courses": [{"code": c.code, "name": c.name} for c in org.courses]} for org in orgs}
 
     section_data = {}
     all_sections = Section.query.join(Course).all()
@@ -185,7 +181,6 @@ def edit_student(id):
         if c_code not in section_data: section_data[c_code] = {}
         if y_level not in section_data[c_code]: section_data[c_code][y_level] = []
         section_data[c_code][y_level].append(sec.name)
-
     
     return render_template('admin/edit_student.html', 
                            student=student,
