@@ -1,7 +1,4 @@
 <div align="center">
-  <img src="app/static/img/screenshots/homepage.png" alt="Homepage" width="800">
-</div>
-<div align="center">
 
 # Project Synapse
 ### Student Data Management & Registration System
@@ -11,6 +8,10 @@
 ![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)
 ![Bootstrap](https://img.shields.io/badge/bootstrap-%23563D7C.svg?style=for-the-badge&logo=bootstrap&logoColor=white)
 ![Deployment](https://img.shields.io/badge/Deployed%20on-PythonAnywhere-2ca5e0?style=for-the-badge&logo=pythonanywhere&logoColor=white)
+
+<div align="center">
+  <img src="app/static/img/screenshots/homepage.png" alt="Homepage" width="800">
+</div>
 
 **ACES Synapse** is a centralized web platform designed to streamline student registration, data encoding, and membership management for the **Association of Computer Engineering Students (ACES)** and other academic organizations at **PUP Biñan Campus**.
 
