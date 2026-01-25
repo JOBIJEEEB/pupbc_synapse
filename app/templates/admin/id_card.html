@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Print IDs</title>
     <style>
-        /* --- FONTS --- */
         @font-face { font-family: 'Arial'; src: local('Arial'); }
         @font-face { font-family: 'Arial Bold'; font-weight: bold; src: local('Arial'); }
         
@@ -14,26 +13,22 @@
         @font-face { font-family: 'Tahoma'; src: url("{{ url_for('static', filename='fonts/tahoma.ttf') }}") format('truetype'); font-weight: normal; }
         @font-face { font-family: 'Tahoma'; src: url("{{ url_for('static', filename='fonts/tahoma_bd.ttf') }}") format('truetype'); font-weight: bold; }
 
-        /* --- PRINT SETTINGS (The Fix) --- */
         @media print {
             @page { 
                 margin: 0px !important; 
             } 
-            
             body { 
                 padding-top: 0 !important; 
                 background: white;
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact; 
             }
-
             .print-sheet {
                 display: flex !important; 
                 width: 100% !important;
                 height: auto !important;
                 overflow: visible !important;
             }
-
             .no-print { display: none !important; }
 
             .card-pair {
@@ -43,7 +38,6 @@
                 margin: 0px !important;
             }
         }
-        /* --- CONTROLS --- */
         .controls {
             position: fixed; top: 0; left: 0; width: 100%;
             background: linear-gradient(90deg,rgb(150, 1, 1) 0%, rgb(68, 4, 110) 25%, rgb(4, 20, 110) 50%, rgb(3, 95, 95) 100%);
@@ -63,9 +57,6 @@
             padding: 8px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;
         }
         .btn-print:hover { background: #33c069 }
-
-
-        /* --- SCREEN STYLES --- */
         body {
             font-family: 'Arial', sans-serif;
             background: #ccc; 
@@ -74,12 +65,10 @@
             padding-bottom: 0px;
             margin: 0;
         }
-        
-        /* --- SHEET CONTAINER --- */
         .print-sheet {
             background: rgb(255, 255, 255);
-            width: 350mm; /* 13 inches */
-            min-height: 215.9mm; /* 8.5 inches */
+            width: 350mm; 
+            min-height: 215.9mm; 
             box-sizing: border-box;
             border-radius: 5px;
             display: flex;
@@ -89,7 +78,6 @@
             gap: 0mm; 
         }
 
-        /* --- CARD PAIR --- */
         .card-pair {
             display: inline-flex;
             flex-direction: row;
@@ -98,11 +86,8 @@
             page-break-inside: avoid;
             -webkit-column-break-inside: avoid;
             margin: 10px;
-            /* Bottom margin ensures spacing if they wrap */
-            
         }
 
-        /* --- CARD STYLING --- */
         .id-card {
             width: 5.50cm; height: 8.35cm;
             position: relative; background: white; overflow: hidden;
@@ -112,7 +97,6 @@
         .id-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
         .id-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; }
 
-        /* FRONT ELEMENTS */
         .front-photo {
             position: absolute; top: 67px; left: 128px; transform: translateX(-50%);
             width: 109px; height: 109px; background: #eee; object-fit: cover;
@@ -135,7 +119,6 @@
             font-family: 'Gadugi', sans-serif; font-weight: bolder; left: 62%; transform: translateX(-50%);
         }
 
-        /* BACK ELEMENTS */
         .back-text {
             position: absolute; font-size: 7px; color: #000; font-family: 'Tahoma', sans-serif; font-weight: normal;
             line-height: 1.1; text-transform: uppercase;
@@ -158,9 +141,7 @@
         <input type="text" id="validityInput" value="ACAD YEAR 2025-2026" oninput="updateValidity()">
         <button class="btn-print" onclick="window.print()">Print</button>
     </div>
-
     <div class="print-sheet">
-        
         {% for student in students %}
         <div class="card-pair">
             

@@ -4,7 +4,6 @@
 
 {% block content %}
 <style>
-    /* --- 1. GLOBAL BACKGROUND --- */
     html, body {
         height: 100%;
         margin: 0;
@@ -13,18 +12,13 @@
         background: linear-gradient(85deg,rgb(172, 170, 170) 0%, rgb(233, 230, 227) 15%, rgb(241, 237, 237) 50%, rgb(248, 244, 244) 80%, rgb(155, 149, 149) 100%);
         font-family: 'Poppins', sans-serif;
     }
-
-    /* --- 2. WRAPPER (Transparent) --- */
     .login-wrapper {
-        flex-grow: 1; /* Pushes footer down */
+        flex-grow: 1; 
         display: flex;
         justify-content: center;
         align-items: center;
         padding: 40px 20px;
-        /* No background color here! content sits directly on body bg */
     }
-
-    /* --- 3. LOGIN CARD --- */
     .login-card {
         width: 100%;
         max-width: 400px;
@@ -46,13 +40,10 @@
         content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px;
         background: #800000;
     }
-
-    /* --- TYPOGRAPHY & ELEMENTS --- */
     .brand-icon { font-size: 3rem; color: #800000; margin-bottom: 10px; }
     .login-title { font-weight: 700; color: #333; letter-spacing: -0.5px; }
     .login-subtitle { color: #6c757d; font-size: 0.9rem; margin-bottom: 30px; }
 
-    /* Inputs */
     .input-group-text {
         background: #f8f9fa; border-right: none; color: #6c757d;
         border-radius: 10px 0 0 10px; border-color: #dee2e6;
@@ -69,15 +60,12 @@
     .input-group:focus-within .input-group-text {
         border-color: #800000; background: #fff; color: #800000;
     }
-
-    /* Toggle Button */
     .btn-toggle-password {
         border-left: none; border-color: #dee2e6; background: #f8f9fa;
         color: #6c757d; border-radius: 0 10px 10px 0; z-index: 10;
     }
     .btn-toggle-password:hover { color: #800000; border-color: #dee2e6; background: #f8f9fa; }
 
-    /* Login Button */
     .btn-login {
         background-color: #800000; border: none; padding: 12px;
         font-weight: 600; letter-spacing: 1px; border-radius: 10px;
@@ -88,7 +76,6 @@
         box-shadow: 0 5px 15px rgba(128, 0, 0, 0.3);
     }
 
-    /* Badge & Footer */
     .security-badge {
         background: rgba(128, 0, 0, 0.05); color: #800000; padding: 8px 15px;
         border-radius: 50px; font-size: 0.75rem; font-weight: 600;

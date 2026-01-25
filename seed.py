@@ -5,12 +5,8 @@ app = create_app()
 
 def seed_everything():
     with app.app_context():
-        print("\n🌱 STARTING FULL DATABASE SEED...")
-        print("=========================================")
+        print("\nSTARTING DB SEED")
 
-        # --- DATA DEFINITIONS (Based on your Screenshots) ---
-        
-        # 1. ORGANIZATIONS
         org_data = [
             {
                 "id": 1, "code": "ACES", "name": "Association of Computer Engineering Students",
@@ -74,10 +70,7 @@ def seed_everything():
             }
         ]
 
-        # --- EXECUTION ---
-
         for data in org_data:
-            # 1. Create Organization
             org = Organization.query.filter_by(code=data['code']).first()
             if not org:
                 org = Organization(
@@ -90,11 +83,10 @@ def seed_everything():
                 )
                 db.session.add(org)
                 db.session.commit()
-                print(f"✅ ORG CREATED: {data['code']}")
+                print(f"ORG CREATED: {data['code']}")
             else:
-                print(f"ℹ️  Org {data['code']} already exists.")
+                print(f"Org {data['code']} already exists.")
 
-            # 2. Create Courses for this Org
             for c_data in data['courses']:
                 course = Course.query.filter_by(code=c_data['code']).first()
                 if not course:
@@ -105,36 +97,30 @@ def seed_everything():
                     )
                     db.session.add(course)
                     db.session.commit()
-                    print(f"   └── Course Added: {c_data['code']}")
+                    print(f"   Course Added: {c_data['code']}")
 
-                # 3. Create Sections for this Course
-                # Standard Sections (1-1 to 4-1)
                 standard_sections = ['1-1', '2-1', '3-1', '4-1']
                 
-                # Special Cases (Based on your screenshots)
                 if c_data['code'] == 'BSCpE':
-                    standard_sections.append('1-2') # ID 45
+                    standard_sections.append('1-2')
                 
                 if c_data['code'] == 'BSBA-HRM':
-                    standard_sections.extend(['1-2', '2-2', '3-2', '4-2']) # IDs 46-49
+                    standard_sections.extend(['1-2', '2-2', '3-2', '4-2'])
 
                 for sec_name in standard_sections:
-                    # Determine Year Level string
                     if sec_name.startswith('1'): yl = "1ST YEAR"
                     elif sec_name.startswith('2'): yl = "2ND YEAR"
                     elif sec_name.startswith('3'): yl = "3RD YEAR"
                     else: yl = "4TH YEAR"
 
-                    # Check if exists
                     sec = Section.query.filter_by(name=sec_name, course_id=course.id).first()
                     if not sec:
                         new_sec = Section(name=sec_name, year_level=yl, course_id=course.id)
                         db.session.add(new_sec)
                 
                 db.session.commit()
-                print(f"       └── Sections synced.")
+                print(f"      Sections synced.")
 
-        print("\n🎉 SUCCESS! Database is fully populated with original data.")
-
+        print("\nSUCCESS! Database is fully populated with original data.")
 if __name__ == "__main__":
     seed_everything()

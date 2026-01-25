@@ -4,7 +4,6 @@
 
 {% block content %}
 <style>
-    /* --- FONTS --- */
     @font-face {
         font-family: 'Poppins';
         src: url("{{ url_for('static', filename='fonts/Poppins-Regular.ttf') }}") format('truetype');
@@ -14,7 +13,6 @@
         src: url("{{ url_for('static', filename='fonts/Poppins-Bold.ttf') }}") format('truetype');
         font-weight: bold;
     }
-
     html, body {
         height: 100vh;      
         margin: 0;
@@ -22,14 +20,11 @@
         font-family: 'Poppins', sans-serif;
         background: linear-gradient(85deg,rgb(172, 170, 170) 0%, rgb(233, 230, 227) 15%, rgb(241, 237, 237) 50%, rgb(248, 244, 244) 80%, rgb(155, 149, 149) 100%);
     }
-
     .dashboard-wrapper {
         display: flex;
         height: calc(100vh - 70px); 
         width: 100%;
     }
-
-    /* --- SIDEBAR STYLES --- */
     .sidebar-container {
         width: 250px;
         flex-shrink: 0;
@@ -40,12 +35,10 @@
         z-index: 10;
         padding: 20px 0 0 0;
     }
-
     .sidebar-nav-content {
         flex-grow: 1;
         overflow-y: auto;
     }
-
     .nav-year-header {
         font-size: 0.7rem;
         text-transform: uppercase;
@@ -54,7 +47,6 @@
         font-weight: 800;
         padding: 15px 20px 5px 20px;
     }
-
     .nav-section-btn {
         display: flex;
         align-items: center;
@@ -68,14 +60,11 @@
         transition: all 0.2s ease;
         cursor: pointer;
     }
-
     .nav-section-btn:hover, .nav-section-btn.active {
         background: rgba(128, 0, 0, 0.05);
         color: #800000;
         font-weight: 600;
     }
-
-    /* --- MAIN CONTENT --- */
     .main-content {
         flex-grow: 1;
         display: flex;
@@ -84,7 +73,6 @@
         overflow: hidden;
         padding: 25px;
     }
-
     .card {
         border: none;
         border-radius: 8px;
@@ -96,8 +84,6 @@
         overflow: hidden;
         background: #fff;
     }
-
-    /* DYNAMIC HEADER BACKGROUND */
     .card-header {
         {% if org and org.header_bg_filename %}
             background-image: url("{{ url_for('static', filename='img/orgs/' + org.header_bg_filename) }}");
@@ -109,13 +95,10 @@
         border-bottom: none;
         padding: 20px 25px;
     }
-
     .table-scroll-wrapper {
         flex-grow: 1;
         overflow-y: auto;   
     }
-
-    /* SWAPPED HEADER STYLING */
     .group-header th {
         font-size: 0.75rem !important; 
         font-weight: 700;
@@ -146,14 +129,18 @@
             <div class="px-3 mb-2">
                 <button onclick="showAll()" class="nav-section-btn active w-100" id="btnShowAll" style="border-radius: 8px;">
                     <i class="bi bi-grid-3x3-gap-fill me-2"></i> Show All Students
+                    <span class="badge bg-light text-dark border ms-auto">{{ total_registered }}</span>
                 </button>
             </div>
             
             {% for year, sections in grouped_data.items() %}
                 <div class="nav-year-header">{{ year }}</div>
-                {% for section in sections.keys() %}
+               {% for section in sections.keys() %}
                     <button onclick="filterBySection('{{ year }}', '{{ section }}', this)" class="nav-section-btn">
-                        <i class="bi bi-folder-fill me-2 opacity-50"></i> Section {{ section }}
+                        <i class="bi bi-folder-fill me-2 opacity-50"></i> {{ section }}
+                        <span class="badge bg-light text-muted border ms-auto">
+                            {{ section_counts.get(section, 0) }}
+                        </span>
                     </button>
                 {% endfor %}
             {% endfor %}
@@ -206,7 +193,6 @@
                             <tbody>
                                 {% for year, sections in grouped_data.items() %}
                                     {% for section, students in sections.items() %}
-                                        
                                         <tr class="group-header" data-year="{{ year }}" data-section="{{ section }}">
                                             <td colspan="5" class="py-2 px-3 border-0" style="background-color: #fcfcfc;">
                                                 <div class="d-flex justify-content-between align-items-center">

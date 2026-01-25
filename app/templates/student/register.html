@@ -203,7 +203,6 @@
         color: #000000;
     }
 
-    /* Checkboxes */
     .form-check-input, .big-checkbox {
         cursor: pointer;
         box-shadow: none !important;
@@ -594,7 +593,7 @@
                                     <label class="form-label">Student Number <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-card-heading"></i></span>
-                                        <input type="text" class="form-control" name="student_number" id="inputStudentNum" placeholder="202X-XXXXX-BN-0" required>
+                                        <input type="text" class="form-control" name="student_number" id="inputStudentNum" placeholder="202X-XXXXX-BN-0" maxlength="15" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -644,7 +643,7 @@
                                     <label class="form-label">Contact Number <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                                        <input type="text" class="form-control" name="emergency_contact_number" id="inputEmergencyNum" required>
+                                        <input type="text" class="form-control" name="emergency_contact_number" id="inputEmergencyNum" maxlength="11" required>
                                     </div>
                                 </div>
                             </div>
@@ -747,33 +746,22 @@
 
 {% block scripts %}
 <script>
-    // --- 1. RECEIVE DATABASE DATA ---
     const dbOrgData = {{ org_data_json | safe }};
     const dbSectionData = {{ section_data_json | safe }};
-
-    // --- 2. INITIALIZE DYNAMIC DROPDOWN ---
     document.addEventListener("DOMContentLoaded", function() {
         const dropdownMenu = document.querySelector('ul[aria-labelledby="orgDropdownBtn"]');
-        
-        // Clear the hardcoded HTML list
         dropdownMenu.innerHTML = ''; 
-
-        // Generate list from Database
         Object.keys(dbOrgData).forEach(orgCode => {
             const org = dbOrgData[orgCode];
             const li = document.createElement('li');
-            // Re-create your layout dynamically
             li.innerHTML = `<a class="dropdown-item" onclick="selectOrg('${orgCode}', '${org.logo}')">
                                 <img src="/static/img/orgs/${org.logo}" class="org-logo"> ${orgCode}
                             </a>`;
             dropdownMenu.appendChild(li);
         });
-
-        // Initialize Visuals
         updateStepVisuals();
     });
 
-    // --- 3. CORE SELECTION LOGIC ---
     const courseSelect = document.getElementById('courseSelect');
     const yearSelect = document.getElementById('yearSelect');
     const sectionSelect = document.getElementById('sectionSelect');
@@ -782,12 +770,10 @@
         const data = dbOrgData[orgCode];
         if (!data) return;
 
-        // Update Input & Button Text
         document.getElementById('orgSelect').value = orgCode;
         const btn = document.getElementById('orgDropdownBtn');
         btn.innerHTML = `<img src="/static/img/orgs/${data.logo}" class="org-logo"> ${orgCode}`;
 
-        // 1. Header Image
         const header = document.querySelector('.card-header');
         if (data.header_bg) {
             header.style.backgroundImage = `url('/static/img/orgs/${data.header_bg}')`;
@@ -796,7 +782,6 @@
             header.style.backgroundColor = data.color;
         }
 
-        // 2. Buttons & Stepper Colors
         const themeColor = data.color;
         const gradientTheme = data.gradient;
 
@@ -805,15 +790,12 @@
             b.style.borderColor = themeColor;
         });
 
-        // 3. Text Gradients
         document.querySelectorAll('.section-title').forEach(t => {
             t.style.backgroundImage = gradientTheme;
         });
 
-        // 4. Update Stepper
         updateStepVisuals();
 
-        // 5. Populate Courses
         courseSelect.innerHTML = '<option value="" selected disabled>Select Course...</option>';
         data.courses.forEach(c => {
             let opt = document.createElement('option');
@@ -823,7 +805,6 @@
             courseSelect.appendChild(opt);
         });
 
-        // Reset dependent dropdowns
         sectionSelect.innerHTML = '<option value="" selected disabled>Select Year...</option>';
         updatePreviewInfo();
     }
@@ -836,7 +817,7 @@
 
         if (dbSectionData[c] && dbSectionData[c][y]) {
             const sections = dbSectionData[c][y];
-            sections.sort(); // Alphabetical sort
+            sections.sort();
             sections.forEach(s => {
                 let opt = document.createElement('option');
                 opt.value = s; 
@@ -847,16 +828,14 @@
         updatePreviewInfo();
     }
 
-    // --- 4. VISUAL HELPERS ---
     function updateStepVisuals() {
         const orgVal = document.getElementById('orgSelect').value;
-        // Use DB color or default
         const themeColor = (orgVal && dbOrgData[orgVal]) ? dbOrgData[orgVal].color : "#2c3e50";
 
         for (let i = 1; i <= totalSteps; i++) {
             const dot = document.getElementById(`step-dot-${i}`);
-            dot.className = "step"; // Reset classes
-            dot.style = ""; // Reset inline styles
+            dot.className = "step"; 
+            dot.style = "";
 
             if (i < currentStep) {
                 dot.classList.add('completed');
@@ -867,7 +846,7 @@
                 dot.classList.add('active');
                 dot.style.backgroundColor = themeColor;
                 dot.style.borderColor = themeColor;
-                dot.style.boxShadow = `0 0 0 5px ${themeColor}66`; // Add transparency for glow
+                dot.style.boxShadow = `0 0 0 5px ${themeColor}66`;
                 dot.style.color = "white";
             } else {
                 dot.style.backgroundColor = "#e9ecef";
@@ -876,7 +855,6 @@
         }
     }
 
-    // --- 5. STANDARD FORM LOGIC (Unchanged) ---
     let currentStep = 1;
     const totalSteps = 4;
 
@@ -933,11 +911,9 @@
         document.getElementById('idCard3D').classList.toggle('flipped');
     }
 
-    // Listeners
     courseSelect.addEventListener('change', updateSections);
     yearSelect.addEventListener('change', updateSections);
 
-    // ID Card Input Listeners
     const inputFirst = document.getElementById('inputFirst');
     const inputMiddle = document.getElementById('inputMiddle');
     const inputLast = document.getElementById('inputLast');
@@ -959,7 +935,6 @@
         document.getElementById('previewNum').textContent = this.value || "202X-XXXXX-BN-X";
         document.getElementById('reviewNum').innerText = this.value;
     });
-
     document.getElementById('inputBirthdate').addEventListener('input', function() {
         const rawDate = this.value;
         if (rawDate) {
@@ -981,7 +956,6 @@
         }
     });
 
-    // Emergency Contact
     function updateEmergency() {
         const name = document.getElementById('inputEmergencyName').value.toUpperCase();
         const num = document.getElementById('inputEmergencyNum').value;
@@ -995,7 +969,6 @@
     document.getElementById('inputEmergencyNum').addEventListener('input', updateEmergency);
     document.getElementById('inputEmergencyAdd').addEventListener('input', updateEmergencyAddress);
 
-    // Same Address Checkbox
     document.getElementById('sameAddressCheck').addEventListener('change', function() {
         const emAddInput = document.getElementById('inputEmergencyAdd');
         if(this.checked) {
@@ -1009,7 +982,6 @@
         }
     });
 
-    // Photo Preview
     document.getElementById('inputPhoto').addEventListener('change', function(event) {
         const file = event.target.files[0];
         if (file) {

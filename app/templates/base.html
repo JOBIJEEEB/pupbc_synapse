@@ -36,7 +36,7 @@
         font-size: 1.5rem;
         display: flex;
         align-items: center;
-        height: 70px; /* Force match navbar height */
+        height: 70px;
         text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
 
@@ -46,8 +46,8 @@
         color: rgba(255,255,255,0.8) !important;
         transition: color 0.3s ease;
         margin-left: 15px;
-        display: inline-block; /* Constraints the ::after line to text width */
-        padding: 23px 0;      /* Vertically centers text within 70px height */
+        display: inline-block; 
+        padding: 23px 0;     
         height: 70px;
     }
 
@@ -55,13 +55,12 @@
         color: #fff !important;
     }
 
-    /* Hover line fixed to text width */
     .modern-navbar .nav-link::after {
         content: '';
         position: absolute;
         width: 0;
         height: 2px;
-        bottom: 18px; /* Positions the line just below the text */
+        bottom: 18px; 
         left: 0;
         background-color: #fff;
         transition: width 0.3s ease;
@@ -86,7 +85,6 @@
         text-decoration: underline;
     }
 
-    /* Flash Messages Positioning */
     #flash-container {
         position: fixed; top: 90px; right: 20px; z-index: 1055; width: 350px; max-width: 90vw;
     }
@@ -182,7 +180,7 @@
         <div class="container text-center text-md-start">
             <div class="row align-items-center">
                 <div class="col-md-6 text-muted small">
-                    <p class="mb-1 text-white opacity-75">&copy; 2026 Association of Computer Engineering Students-PUPBC. Ver. 2.0.1-beta2.</p>
+                    <p class="mb-1 text-white opacity-75">&copy; {{ now.year if now else 2026 }} Association of Computer Engineering Students-PUPBC v2.1.0</p>
                     <p class="mb-0 text-white opacity-75">For campus use only. Compliant with Data Privacy Act of 2012 (RA 10173).</p>
                 </div>
                 <div class="col-md-6 text-md-end mt-3 mt-md-0">

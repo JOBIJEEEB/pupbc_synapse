@@ -5,6 +5,7 @@ from app.models import db
 from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv
 import os
+from datetime import datetime
 
 load_dotenv()
 migrate = Migrate()
@@ -24,6 +25,9 @@ def create_app():
     app.register_blueprint(student_bp, url_prefix='/student')
     app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(main_bp)
+    @app.context_processor
+    def inject_now():
+        return {'now': datetime.now()}  
 
     @app.route('/')
     def home():
@@ -33,4 +37,5 @@ def create_app():
         db.create_all()
 
     return app
+    
 

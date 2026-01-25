@@ -26,7 +26,7 @@ def setup():
             new_admin = Admin(username=username, password_hash=hashed_pw)
             db.session.add(new_admin)
             db.session.commit()
-            print(f"✅ Admin '{username}' created.")
+            print(f"Admin '{username}' created.")
         else:
             print("Admin account already exists. Skipping creation.")
 

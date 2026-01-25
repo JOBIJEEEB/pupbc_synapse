@@ -77,7 +77,7 @@ class Admin(db.Model):
     username = db.Column(db.String(50), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
 
-# CHANGE REQUEST TABLE
+# CHANGE REQUEST TABLE - note: not yet enforced, for future use nalang 'to
 class ChangeRequest(db.Model):
     __tablename__ = 'change_requests'
 

@@ -2,7 +2,7 @@ import os
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session, current_app, jsonify
 from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 from app.models import db, Admin, Student, Organization, Course, Section
 import json
 import csv
@@ -58,7 +58,12 @@ def login():
 @login_required
 def dashboard():
     organizations = Organization.query.order_by(Organization.code).all()
-    return render_template('admin/dashboard.html', organizations=organizations)
+    stats_query = db.session.query(
+        Student.course, 
+        func.count(Student.id)
+    ).group_by(Student.course).all()
+    course_counts = {course: count for course, count in stats_query}
+    return render_template('admin/dashboard.html', organizations=organizations, course_counts=course_counts)
 
 @admin_bp.route('/course/<string:course_name>')
 @login_required
@@ -68,16 +73,21 @@ def view_course(course_name):
 
     students = Student.query.filter(
         or_(
-            Student.course == course_name,  # Matches "Bachelor of Science..."
-            Student.course == course_code   # Matches "BSCPE"
+            Student.course == course_name,  
+            Student.course == course_code   
         )
     ).all()
+
+    total_registered = len(students)
+    section_counts = {} 
 
     grouped_data = {}
     for student in students:
         year = student.year_level
         section = student.section
-        
+
+        section_counts[section] = section_counts.get(section, 0) + 1
+
         if year not in grouped_data:
             grouped_data[year] = {}
         
@@ -96,7 +106,10 @@ def view_course(course_name):
     return render_template('admin/course_view.html', 
                            course_name=course_name, 
                            grouped_data=sorted_grouped_data,
-                           course_code=course_code, org=org)
+                           course_code=course_code, 
+                           org=org,
+                           total_registered=total_registered,
+                           section_counts=section_counts)
 
 @admin_bp.route('/generate_id/<int:id>')
 @login_required
@@ -241,24 +254,20 @@ def add_org():
         code = request.form['code'].upper()
         name = request.form['name']
         color_primary = request.form['color_primary']
-        # Create gradient automatically
         color_gradient = f"linear-gradient(to right, {color_primary}, {color_primary})"
         
         logo_filename = 'default_logo.png'
         header_filename = 'default_header.jpg'
 
-        # Handle Logo Upload
         if 'logo' in request.files and request.files['logo'].filename != '':
             file = request.files['logo']
             filename = secure_filename(file.filename)
-            # Ensure the folder exists
             save_path = os.path.join(current_app.root_path, 'static/img/orgs')
             if not os.path.exists(save_path): os.makedirs(save_path)
             
             file.save(os.path.join(save_path, filename))
             logo_filename = filename
 
-        # Handle Header Upload
         if 'header_bg' in request.files and request.files['header_bg'].filename != '':
             file = request.files['header_bg']
             filename = secure_filename(file.filename)
@@ -298,7 +307,6 @@ def add_course():
         db.session.add(new_course)
         db.session.commit()
 
-        # Optional: Auto-create sections 1-1 to 4-1
         for year in ["1ST YEAR", "2ND YEAR", "3RD YEAR", "4TH YEAR"]:
             db.session.add(Section(course_id=new_course.id, year_level=year, name="1-1"))
         db.session.commit()
@@ -331,14 +339,13 @@ def add_section():
 
     return redirect(url_for('admin.settings'))
 
-# --- DELETE ROUTES (Redirects) ---
+# DELETE ROUTES (Redirects)
 
 @admin_bp.route('/settings/delete_org/<int:id>', methods=['POST'])
 @login_required
 def delete_org(id):
     try:
         org = Organization.query.get_or_404(id)
-        # Delete dependent data manually to be safe
         courses = Course.query.filter_by(org_id=org.id).all()
         for course in courses:
             Section.query.filter_by(course_id=course.id).delete()
@@ -384,7 +391,7 @@ def delete_section(id):
         
     return redirect(url_for('admin.settings'))
 
-# --- EDIT ROUTES (Redirects) ---
+# EDIT ROUTES (Redirects)
 
 @admin_bp.route('/settings/edit_org/<int:id>', methods=['POST'])
 @login_required

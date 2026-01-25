@@ -13,15 +13,12 @@
         src: url("{{ url_for('static', filename='fonts/Poppins-Bold.ttf') }}") format('truetype');
         font-weight: bold;
     }
-
     html, body {
         height: 100vh;
         margin: 0;
         overflow: hidden; 
         font-family: 'Poppins', sans-serif;
-        
     }
-
     .container.mt-5 {
         max-width: 100% !important; 
         margin-top: 0 !important;   
@@ -41,7 +38,6 @@
         background: #fff;
         box-shadow: 0 5px 25px rgba(0,0,0,0.05);
     }
-
     .scrollable-body {
         flex-grow: 1;
         overflow-y: hidden; 
@@ -49,7 +45,6 @@
         background-color: #ffffff;
         padding-bottom: 50px;
     }
-
     .org-card {
         border: solid 1px rgba(0,0,0,0.08); 
         border-radius: 12px;
@@ -64,7 +59,6 @@
         box-shadow: 0 10px 20px rgba(0,0,0,0.08);
         border-color: rgba(0,0,0,0.15);
     }
-    
     .org-header {
         position: relative; 
         min-height: 100px; 
@@ -74,7 +68,6 @@
         background-size: cover; 
         background-position: right center;
     }
-
     .org-header::before {
         content: ''; 
         position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -88,7 +81,6 @@
         letter-spacing: 1px; 
         font-size: 1.8rem; 
     }
-
     .course-link {
         display: flex; 
         align-items: center; 
@@ -109,7 +101,6 @@
         transform: translateX(3px);
     }
     .text-maroon { color: #800000 !important; }
-
     .scrollable-body::-webkit-scrollbar { width: 8px; }
     .scrollable-body::-webkit-scrollbar-track { background: #f1f1f1; }
     .scrollable-body::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
@@ -149,14 +140,16 @@
                             <p class="text-muted small fw-bold text-uppercase mb-2 opacity-75" style="font-size: 0.7rem; letter-spacing: 0.5px;">Available Courses</p>
                             <div class="d-grid gap-2">
                                 {% for course in org.courses %}
-                                <a href="{{ url_for('admin.view_course', course_name=course.name) }}" class="course-link" style="color: {{ org.color_primary }};">
-                                    <i class="bi bi-folder2-open me-2 opacity-75"></i> 
-                                    <span class="text-truncate">{{ course.code }}</span>
-                                </a>
+                                    <a href="{{ url_for('admin.view_course', course_name=course.name) }}" 
+                                    class="btn btn-light text-start border shadow-sm d-flex align-items-center">
+                                        <i class="bi bi-folder2-open me-2 text-danger opacity-75"></i>
+                                        {{ course.code }}
+                                        <span class="badge bg-white text-muted border ms-auto">
+                                            {{ course_counts.get(course.code, 0) }}
+                                        </span>
+                                        
+                                    </a>
                                 {% endfor %}
-                                {% if not org.courses %}
-                                    <div class="text-center py-2 text-muted small fst-italic bg-light rounded">No courses added.</div>
-                                {% endif %}
                             </div>
                         </div>
                     </div>

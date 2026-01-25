@@ -299,23 +299,18 @@
 </div>
 
 <script>
-    // --- 0. UI HELPERS & PERSISTENCE ---
     document.addEventListener("DOMContentLoaded", function() {
-        // Restore Active Tab
         const activeTabId = localStorage.getItem('activeSettingsTab');
         if (activeTabId) {
             const triggerEl = document.getElementById(activeTabId);
             if (triggerEl) { new bootstrap.Tab(triggerEl).show(); }
         }
-        // Save Tab on Click
         const tabEls = document.querySelectorAll('button[data-bs-toggle="pill"]');
         tabEls.forEach(tabEl => {
             tabEl.addEventListener('shown.bs.tab', function (event) {
                 localStorage.setItem('activeSettingsTab', event.target.id);
             })
         });
-
-        // Restore Filters
         const savedCourseFilter = localStorage.getItem('settingsCourseFilter');
         if (savedCourseFilter) {
             const el = document.getElementById('courseFilter');
@@ -327,8 +322,6 @@
             if(el) { el.value = savedSectionFilter; filterTable('sectionTable', 0); }
         }
     });
-
-    // --- 1. MODAL OPENERS ---
     
     function openAddSectionModal(preCourseId = null, preYear = null) {
         const modal = new bootstrap.Modal(document.getElementById('addSectionModal'));
@@ -370,19 +363,16 @@
         document.getElementById('edit_section_course').value = courseId;
         document.getElementById('editSectionForm').action = "/admin/settings/edit_section/" + id;
         
-        // Link the delete button to this specific section ID
         document.getElementById('hiddenDeleteSectionForm').action = "/admin/settings/delete_section/" + id;
         
         new bootstrap.Modal(document.getElementById('editSectionModal')).show();
     }
 
-    // --- 2. DELETE LOGIC ---
     function deleteSectionViaForm() {
         if(!confirm("Are you sure you want to delete this section?")) return;
         document.getElementById('hiddenDeleteSectionForm').submit();
     }
 
-    // --- 3. FILTER LOGIC ---
     function filterTable(tableId, cellIndex) {
         const filterEl = document.getElementById(tableId === 'courseTable' ? 'courseFilter' : 'sectionFilter');
         const filterVal = filterEl.value.toUpperCase();

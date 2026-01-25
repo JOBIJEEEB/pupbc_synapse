@@ -40,7 +40,7 @@ def register():
                 first_name=request.form['first_name'],
                 middle_name=request.form.get('middle_name', ''),
                 last_name=request.form['last_name'],
-                birthdate=birthdate_obj,  # Use the converted date object here
+                birthdate=birthdate_obj,
                 residential_address=request.form['residential_address'],
                 emergency_contact_name=request.form['emergency_contact_name'],
                 emergency_contact_number=request.form['emergency_contact_number'],
