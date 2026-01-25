@@ -13,6 +13,7 @@
         src: url("{{ url_for('static', filename='fonts/Poppins-Bold.ttf') }}") format('truetype');
         font-weight: bold;
     }
+
     html, body {
         height: 100vh;      
         margin: 0;
@@ -20,11 +21,14 @@
         font-family: 'Poppins', sans-serif;
         background: linear-gradient(85deg,rgb(172, 170, 170) 0%, rgb(233, 230, 227) 15%, rgb(241, 237, 237) 50%, rgb(248, 244, 244) 80%, rgb(155, 149, 149) 100%);
     }
+
     .dashboard-wrapper {
         display: flex;
         height: calc(100vh - 70px); 
         width: 100%;
+        overflow: hidden; 
     }
+
     .sidebar-container {
         width: 250px;
         flex-shrink: 0;
@@ -35,10 +39,12 @@
         z-index: 10;
         padding: 20px 0 0 0;
     }
+
     .sidebar-nav-content {
         flex-grow: 1;
         overflow-y: auto;
     }
+
     .nav-year-header {
         font-size: 0.7rem;
         text-transform: uppercase;
@@ -47,6 +53,7 @@
         font-weight: 800;
         padding: 15px 20px 5px 20px;
     }
+
     .nav-section-btn {
         display: flex;
         align-items: center;
@@ -60,11 +67,19 @@
         transition: all 0.2s ease;
         cursor: pointer;
     }
+
     .nav-section-btn:hover, .nav-section-btn.active {
         background: rgba(128, 0, 0, 0.05);
         color: #800000;
         font-weight: 600;
     }
+
+    .sidebar-footer {
+        padding: 15px;
+        border-top: 1px solid #eee;
+        background: #fff;
+    }
+
     .main-content {
         flex-grow: 1;
         display: flex;
@@ -73,18 +88,21 @@
         overflow: hidden;
         padding: 25px;
     }
+
     .card {
         border: none;
         border-radius: 8px;
         box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
         width: 100%; 
-        height: 100%; 
+        height: 100%;          
         display: flex;
         flex-direction: column;
-        overflow: hidden;
+        overflow: hidden;      
         background: #fff;
     }
+
     .card-header {
+        flex-shrink: 0;        
         {% if org and org.header_bg_filename %}
             background-image: url("{{ url_for('static', filename='img/orgs/' + org.header_bg_filename) }}");
             background-size: cover;
@@ -95,10 +113,36 @@
         border-bottom: none;
         padding: 20px 25px;
     }
-    .table-scroll-wrapper {
-        flex-grow: 1;
-        overflow-y: auto;   
+
+    .card-body {
+        flex-grow: 1;         
+        display: flex;
+        flex-direction: column;
+        padding: 0;           
+        overflow: hidden;     
+        height: 100%;
     }
+
+    #bulkForm {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .action-bar {
+        background: #fff;
+        padding: 15px 25px;
+        border-bottom: 1px solid #eee;
+        flex-shrink: 0;       
+    }
+
+    .table-scroll-wrapper {
+        flex-grow: 1;         
+        overflow-y: auto;     
+        height: 0px;          
+    }
+
     .group-header th {
         font-size: 0.75rem !important; 
         font-weight: 700;
@@ -107,18 +151,18 @@
         color: #888;
         background-color: #fff;
         border-bottom: 1px solid #eee;
+        position: sticky;
+        top: 0;
+        z-index: 5;
     }
-
-    .action-bar {
-        background: #fff;
-        padding: 15px 25px;
-        border-bottom: 1px solid #eee;
+    div:where(.swal2-container) .swal2-popup {
+        font-family: 'Poppins', sans-serif !important;
+        border-radius: 15px !important;
+        border-top: 5px solid #800000;
     }
-
-    .sidebar-footer {
-        padding: 15px;
-        border-top: 1px solid #eee;
-        background: #fff;
+    div:where(.swal2-container) .swal2-title {
+        color: #800000 !important;
+        font-weight: 700 !important;
     }
 </style>
 
@@ -167,7 +211,7 @@
             </div>
 
             <div class="card-body">
-                <form action="{{ url_for('admin.batch_print') }}" method="POST" target="_blank" id="bulkForm" class="d-flex flex-column h-100">
+                <form action="{{ url_for('admin.batch_print') }}" method="POST" target="_blank" id="bulkForm">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                     <div class="action-bar row align-items-center m-0">
@@ -253,6 +297,10 @@
                         </table>
                     </div>
                 </form> 
+                
+                <div class="text-center py-2 text-muted small border-top" style="flex-shrink: 0;">
+                     &copy; {{ now.year }} SYNAPSE v2.1.1
+                </div>
             </div>
         </div>
     </div>
