@@ -208,7 +208,7 @@ def delete_student(id):
     db.session.delete(student)
     db.session.commit()
     flash('Student deleted successfully!')
-    return redirect(url_for('admin.view_course', course_name=course_name))
+    return redirect(request.referrer)
 
 @admin_bp.route('/admin/delete_bulk', methods=['POST'])
 @login_required

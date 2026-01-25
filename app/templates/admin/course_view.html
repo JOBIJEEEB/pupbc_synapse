@@ -238,8 +238,9 @@
                                                 <div class="btn-group shadow-sm">
                                                     <a href="{{ url_for('admin.generate_id', id=s.id) }}" target="_blank" class="btn btn-sm btn-white border"><i class="bi bi-printer text-success"></i></a>
                                                     <a href="{{ url_for('admin.edit_student', id=s.id) }}" class="btn btn-sm btn-white border"><i class="bi bi-pencil-square text-primary"></i></a>
-                                                    <button type="submit" form="bulkForm" formaction="{{ url_for('admin.delete_student', id=s.id) }}" 
-                                                            class="btn btn-sm btn-white border" onclick="return confirm('Delete student?');">
+                                                    <button type="button" 
+                                                            class="btn btn-sm btn-white border" 
+                                                            onclick="confirmDelete('{{ url_for('admin.delete_student', id=s.id) }}')">
                                                         <i class="bi bi-trash text-danger"></i>
                                                     </button>
                                                 </div>
@@ -292,5 +293,30 @@
             if(cb.closest('tr').style.display !== 'none') cb.checked = this.checked;
         });
     });
+
+    function confirmDelete(deleteUrl) {
+        Swal.fire({
+            title: 'Delete Student?',
+            text: "This action cannot be undone.",
+            icon: 'warning',
+            
+            confirmButtonColor: '#800000',  
+            cancelButtonColor: '#6c757d', 
+            confirmButtonText: '<i class="bi bi-trash-fill me-1"></i> Yes, Delete',
+            cancelButtonText: 'Cancel',
+            
+            heightAuto: false,              
+            buttonsStyling: true,           
+            reverseButtons: true,
+            
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.getElementById('bulkForm');
+                form.action = deleteUrl;
+                form.target = "_self";
+                form.submit();
+            }
+        });
+    }
 </script>
 {% endblock %}
