@@ -56,7 +56,7 @@
     One-click CSV generation formatted specifically for class and section lists, ready for printing or Excel.
 
 * **Organization Isolation** 🏫  
-    Supports multiple organizations (ACES, HRSS, JPIA) with dynamic branding, headers, and color themes.
+    Supports multiple organizations with dynamic branding, headers, and color themes.
 
 ---
 
