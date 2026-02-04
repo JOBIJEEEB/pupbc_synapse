@@ -236,6 +236,9 @@ def delete_bulk():
 @admin_bp.route('/settings')
 @login_required
 def settings():
+    lock_file = os.path.join(current_app.root_path, 'registration_closed.lock')
+    is_closed = os.path.exists(lock_file)
+
     orgs = Organization.query.order_by(Organization.code).all()
     courses = Course.query.order_by(Course.code).all()
 
@@ -246,7 +249,22 @@ def settings():
         if key not in grouped_sections:
             grouped_sections[key] = {"course_code": sec.course.code, "course_id": sec.course.id, "year_level": sec.year_level, "sections": []}
         grouped_sections[key]["sections"].append({"id": sec.id, "name": sec.name})
-    return render_template('settings.html', orgs=orgs, courses=courses, grouped_sections=grouped_sections)
+    return render_template('settings.html', orgs=orgs, courses=courses, grouped_sections=grouped_sections, is_closed=is_closed)
+
+@admin_bp.route('/settings/toggle', methods=['POST'])
+@login_required
+def toggle_registration():
+    lock_file = os.path.join(current_app.root_path, 'registration_closed.lock')
+    
+    if os.path.exists(lock_file):
+        os.remove(lock_file)
+        flash('Registration is now OPEN.', 'success')
+    else:
+        with open(lock_file, 'w') as f:
+            f.write('closed')
+        flash('Registration is now CLOSED.', 'warning')
+        
+    return redirect(url_for('admin.settings'))
 
 @admin_bp.route('/settings/add_org', methods=['POST'])
 @login_required

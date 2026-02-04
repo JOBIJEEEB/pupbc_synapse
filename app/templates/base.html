@@ -182,7 +182,7 @@
                 <div class="col-md-6 text-muted small">
                     <p class="mb-1 text-white opacity-75">
                         &copy; {{ now.year if now else 2026 }} <strong>ACES-PUPBC Synapse</strong>
-                        <span class="badge bg-white text-dark ms-1" style="font-size: 0.65rem;">v2.1.1</span>
+                        <span class="badge bg-white text-dark ms-1" style="font-size: 0.65rem;">v2.1.2</span>
                     </p>
                     <p class="mb-0 text-white opacity-50">
                         For campus use only. Compliant with Data Privacy Act of 2012 (RA 10173).
@@ -241,7 +241,7 @@
 
                         Swal.fire({
                             title: titleText,
-                            text: "{{ message }}",
+                            text: "{{ message | safe }}",
                             icon: iconType,
 
                             confirmButtonText: 'Got it',

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Closed | ACES Synapse</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/orgs/ACES.png') }}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <style>
+        @font-face {
+            font-family: 'Poppins';
+            src: url("{{ url_for('static', filename='fonts/Poppins-Regular.ttf') }}") format('truetype');
+            font-weight: 400;
+        }
+        @font-face {
+            font-family: 'Poppins';
+            src: url("{{ url_for('static', filename='fonts/Poppins-Bold.ttf') }}") format('truetype');
+            font-weight: 700;
+        }
+
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #000;
+            overflow-x: hidden;
+            color: white;
+        }
+
+        .hero-section {
+            background: linear-gradient(125deg, #1b0d0d 20%, #3e0000 60%, #7a0000 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 20px;
+        }
+
+        .hero-section::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.4;
+            animation: scanline 15s linear infinite;
+            pointer-events: none;
+        }
+        
+        .hero-section::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.2) 1px, transparent 1px);
+            background-size: 60px 60px;
+            opacity: 0.3;
+            animation: particle-drift 25s linear infinite;
+            pointer-events: none;
+        }
+
+        .glass-card {
+            background: rgba(20, 20, 20, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+            border-radius: 24px;
+            
+            max-width: 850px; 
+            width: 100%;
+            padding: 4rem 4rem; 
+            
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        @keyframes scanline {
+            0% { background-position: 0 0; }
+            100% { background-position: 50px 50px; }
+        }
+        @keyframes particle-drift {
+            0% { background-position: 0 0; }
+            100% { background-position: 60px 120px; }
+        }
+
+        .logo-img {
+            width: 110px;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 0 15px rgba(255,0,0,0.3));
+        }
+
+        h1.title-static {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .status-pill {
+            display: inline-block;
+            background: rgba(220, 53, 69, 0.15);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            color: #ff8fa3;
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .lead-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2rem;
+            margin-bottom: 2.5rem;
+            font-weight: 300;
+        }
+
+        .inquiry-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2.5rem;
+            border-left: 4px solid #dc3545;
+            text-align: left;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .inquiry-content h6 {
+            color: #ffcccc;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .inquiry-content p {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .btn-gold-custom {
+            background: linear-gradient(135deg, #FFD700 0%, #daa520 100%);
+            color: #3e0000;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .btn-gold-custom:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(135deg, #ffe033 0%, #ffd633 100%);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+            color: #000;
+        }
+
+
+        .btn-outline-custom {
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.9);
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .btn-outline-custom:hover {
+            border-color: #ffffff;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .offline-dot {
+            height: 7px; width: 7px;
+            background-color: #dc3545;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+            box-shadow: 0 0 8px #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .glass-card { padding: 3rem 1.5rem; }
+            h1.title-static { font-size: 2.2rem; }
+            .inquiry-box { flex-direction: column; gap: 0.5rem; }
+            .d-flex.gap-3 { flex-direction: column; } 
+            .btn-gold-custom, .btn-outline-custom { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hero-section">
+        <div class="glass-card">
+            
+            <img src="{{ url_for('static', filename='img/orgs/aces.png') }}" alt="ACES Logo" class="logo-img">
+
+            <div>
+                <span class="status-pill">
+                    <span class="offline-dot"></span> System Offline
+                </span>
+            </div>
+
+            <h1 class="title-static">REGISTRATION CLOSED</h1>
+
+            <p class="lead-text">
+                The ID processing period for <strong>AY 2025-2026</strong> has officially ended.
+            </p>
+
+            <div class="inquiry-box">
+                <i class="bi bi-info-circle-fill fs-4 text-danger"></i>
+                <div class="inquiry-content">
+                    <h6>Need Help?</h6>
+                    <p>
+                        For late registration requests, corrections, or other concerns regarding your student ID, please contact the ACES officers directly via our official page.
+                    </p>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-3">
+                
+                <a href="https://www.facebook.com/acespupbc" target="_blank" class="btn btn-gold-custom">
+                    <i class="bi bi-messenger"></i> Chat on Facebook
+                </a>
+
+                <a href="mailto:acesorganization2022@gmail.com" class="btn btn-outline-custom">
+                    <i class="bi bi-envelope-at-fill"></i> Email Us
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

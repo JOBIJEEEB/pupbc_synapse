@@ -63,7 +63,7 @@
 </style>
 
 <div class="container mt-4 mb-5">
-    {% with messages = get_flashed_messages(with_categories=true) %}
+
       {% if messages %}
         {% for category, message in messages %}
           <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
@@ -72,8 +72,42 @@
           </div>
         {% endfor %}
       {% endif %}
-    {% endwith %}
 
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-dark text-white d-flex align-items-center gap-2">
+            <i class="bi bi-toggles"></i> Site Control
+        </div>
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                
+                <div>
+                    <h5 class="mb-1">Student Registration</h5>
+                    <p class="mb-0 text-muted small">
+                        {% if is_closed %}
+                            <span class="badge bg-danger">CLOSED</span> ID Registration is now closed.
+                        {% else %}
+                            <span class="badge bg-success">OPEN</span> ID Registration is open.
+                        {% endif %}
+                    </p>
+                </div>
+
+                <form action="{{ url_for('admin.toggle_registration') }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}"/>
+                    
+                    {% if is_closed %}
+                        <button type="submit" class="btn btn-outline-success">
+                            <i class="bi bi-unlock-fill me-1"></i> Open Registration
+                        </button>
+                    {% else %}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-lock-fill me-1"></i> Close Registration
+                        </button>
+                    {% endif %}
+                </form>
+                
+            </div>
+        </div>
+    </div>
     <div class="settings-card">
         <div class="settings-nav d-flex flex-column py-4" style="height: 100%; min-height: 600px;">
             <div>
@@ -97,6 +131,7 @@
                 </a>
             </div>
         </div>
+        
 
         <div class="settings-content-wrapper">
             <div class="tab-content settings-content" id="v-pills-tabContent">

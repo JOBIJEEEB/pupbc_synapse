@@ -9,9 +9,10 @@ student_bp = Blueprint('student', __name__)
 
 @student_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    lock_file = os.path.join(current_app.root_path, 'maintenance.lock')
+    lock_file = os.path.join(current_app.root_path, 'registration_closed.lock')
     if os.path.exists(lock_file):
-        return render_template('maintenance.html')
+        return render_template('closed.html')
+    
     if request.method == 'POST':
         try:
             s_num = request.form['student_number']
