@@ -44,7 +44,7 @@
 
     .container {
         flex: 1;
-        max-width: 1200px !important; 
+        max-width: 1200px !important;
         width: 100%;
     }
 
@@ -52,34 +52,34 @@
         display: flex;
         flex-direction: column;
         height: 100%;
-        padding: 20px; 
-        overflow-y: auto; 
+        padding: 20px;
+        overflow-y: auto;
     }
-    
+
     .card-body-flex::-webkit-scrollbar {
         width: 8px;
     }
     .card-body-flex::-webkit-scrollbar-track {
-        background: #f1f1f1; 
+        background: #f1f1f1;
     }
     .card-body-flex::-webkit-scrollbar-thumb {
-        background: #ccc; 
+        background: #ccc;
         border-radius: 4px;
     }
     .card-body-flex::-webkit-scrollbar-thumb:hover {
-        background: #aaa; 
+        background: #aaa;
     }
 
     #regForm {
         display: flex;
         flex-direction: column;
-        flex-grow: 1; 
+        flex-grow: 1;
     }
 
     .button-container {
-        margin-top: auto; 
+        margin-top: auto;
         padding-top: 20px;
-        border-top: 1px solid #eee; 
+        border-top: 1px solid #eee;
     }
 
     .step-indicator {
@@ -89,7 +89,7 @@
         position: relative;
         padding: 0 20px;
     }
-    
+
     .step-indicator::before {
         content: '';
         position: absolute;
@@ -98,24 +98,24 @@
         background: #e9ecef;
         z-index: 1;
     }
-    
+
     .step {
         width: 35px; height: 35px;
         border-radius: 50%;
-        background-color: #e9ecef; 
+        background-color: #e9ecef;
         color: #6c757d;
         display: flex;
         align-items: center; justify-content: center;
         font-weight: bold;
         position: relative; z-index: 2;
-        border: 2px solid #fff; 
+        border: 2px solid #fff;
         transition: all 0.4s ease;
     }
 
      .step.active {
         color: white;
-        background-color: #2c3e50; 
-        transform: scale(1.15); 
+        background-color: #2c3e50;
+        transform: scale(1.15);
         box-shadow: 0 0 0 5px rgba(44, 62, 80, 0.2);
     }
 
@@ -149,13 +149,13 @@
         color: #333;
         border-radius: 6px;
         transition: border-color 0.2s, box-shadow 0.2s;
-        font-family: inherit; 
+        font-family: inherit;
     }
 
     .form-select {
-        padding-right: 40px !important; 
-        text-overflow: ellipsis;        
-        white-space: nowrap;            
+        padding-right: 40px !important;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         overflow: hidden;
     }
 
@@ -173,7 +173,7 @@
         transition: border-color 0.2s;
     }
 
-    .input-group > .form-control, 
+    .input-group > .form-control,
     .input-group > .form-select {
         border-left: none;
         border-top-left-radius: 0;
@@ -190,7 +190,7 @@
     .input-group:focus-within .form-control,
     .input-group:focus-within .form-select {
         border-color: #000000 !important;
-        box-shadow: none !important; 
+        box-shadow: none !important;
     }
 
     .input-group:focus-within {
@@ -198,7 +198,7 @@
         border-radius: 6px;
         z-index: 3;
     }
-    
+
     .input-group:focus-within .input-group-text {
         color: #000000;
     }
@@ -219,7 +219,7 @@
         object-fit: contain;
         margin-right: 12px;
     }
-    
+
     .custom-dropdown-toggle {
         background-color: #fff;
         border: 1px solid #ced4da;
@@ -233,10 +233,10 @@
 
     .custom-dropdown-toggle:hover {
         background-color: #f8f9fa;
-        border-color: #aeb4b9; 
-        color: #333;           
+        border-color: #aeb4b9;
+        color: #333;
     }
-    
+
     .custom-dropdown-toggle:focus {
         border-color: #000;
         box-shadow: 0 0 0 3px rgba(0,0,0,0.15);
@@ -244,31 +244,31 @@
     }
 
     .dropdown-item {
-        display: flex;       
-        align-items: center; 
-        padding: 8px 15px;   
+        display: flex;
+        align-items: center;
+        padding: 8px 15px;
         cursor: pointer;
     }
 
     .card {
         border: none;
         border-radius: 12px;
-        box-shadow: 0 5px 25px rgba(0,0,0,0.08); 
-        width: 100%; 
-        height: 650px; 
-        overflow: hidden; 
+        box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+        width: 100%;
+        height: 650px;
+        overflow: hidden;
     }
-    
-    
+
+
     .card-header {
         border-radius: 12px 12px 0 0 !important;
         padding: 18px 25px;
-        background-color: #2c3e50; 
+        background-color: #2c3e50;
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
         transition: background-image 0.5s ease-in-out;
-        flex-shrink: 0; 
+        flex-shrink: 0;
     }
 
     .btn-primary {
@@ -279,18 +279,18 @@
 
 
     .section-title {
-        font-weight: bolder; 
+        font-weight: bolder;
         background-clip: text;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
 
         background-image: linear-gradient(180deg, #1d1d1d, #19191a);
-        
+
         transition: background-image 0.5s ease-in-out;
     }
 
     .certification-box {
-        background-color: #fff3cd; 
+        background-color: #fff3cd;
         border: 2px solid #ffecb5;
         border-left: 5px solid #ffc107;
         border-radius: 6px;
@@ -302,9 +302,9 @@
     }
 
     .certification-box.checked {
-        background-color: #d1e7dd; 
-        border-color: #badbcc;     
-        border-left-color: #198754; 
+        background-color: #d1e7dd;
+        border-color: #badbcc;
+        border-left-color: #198754;
     }
 
     .certification-box .form-check {
@@ -320,7 +320,7 @@
         flex-shrink: 0;
         margin-left: 5px;
     }
-    
+
     .big-checkbox:checked {
         background-color: #198754; border-color: #198754;
     }
@@ -331,15 +331,15 @@
         margin: 0; line-height: 1.2;
         transition: color 0.3s;
     }
-    
+
     .certification-box.checked .certification-label {
-        color: #0f5132; 
+        color: #0f5132;
     }
 
     .id-card-wrapper {
         position: sticky;
         top: 20px;
-        perspective: 1000px; 
+        perspective: 1000px;
     }
 
     .pup-id-card {
@@ -367,11 +367,11 @@
     }
 
     .card-front { z-index: 2; transform: rotateY(0deg); }
-    
-    .card-back { 
-        transform: rotateY(180deg); 
+
+    .card-back {
+        transform: rotateY(180deg);
         z-index: 1;
-        font-family: 'Tahoma', sans-serif; 
+        font-family: 'Tahoma', sans-serif;
     }
 
     .id-bg { width: 100%; height: 100%; object-fit: fill; position: absolute; top: 0; left: 0; z-index: 1; }
@@ -383,26 +383,26 @@
         background: #eee; border: 1px solid #ddd;
     }
     .photo-area img { width: 100%; height: 100%; object-fit: cover; }
-    
+
     .name-group { position: absolute; top: 287px; width: 100%; text-align: center; padding: 0 10px 0 90px; }
     .first-name { font-size: 14px; text-transform: uppercase; display: block; line-height: 1.9; }
     .last-name { font-size: 18px; font-weight: bold; text-transform: uppercase; display: block; line-height: 1; }
-    
-    .student-number { 
-        position: absolute; top: 343px; width: 100%; text-align: center; 
-        padding-left: 88px; padding-right: 10px; font-size: 17px; letter-spacing: 0.5px; 
+
+    .student-number {
+        position: absolute; top: 343px; width: 100%; text-align: center;
+        padding-left: 88px; padding-right: 10px; font-size: 17px; letter-spacing: 0.5px;
     }
-    
-    .course-name { 
-        position: absolute; top: 372px; left: 89px; width: 220px; 
-        text-align: center; font-size: 15px; font-weight: bold; 
-        display: flex; align-items: center; justify-content: center; line-height: 1.1; 
+
+    .course-name {
+        position: absolute; top: 372px; left: 89px; width: 220px;
+        text-align: center; font-size: 15px; font-weight: bold;
+        display: flex; align-items: center; justify-content: center; line-height: 1.1;
     }
 
     /* Back Positioning */
-    .back-text { 
-        position: absolute; font-size: 12px; color: #000; width: 280px; 
-        white-space: normal; overflow-wrap: break-word; word-wrap: break-word; 
+    .back-text {
+        position: absolute; font-size: 12px; color: #000; width: 280px;
+        white-space: normal; overflow-wrap: break-word; word-wrap: break-word;
     }
     .b-dob { top: 114px; left: 102px; font-size: 11px; font-weight: normal; width: auto;}
     .b-address { text-align: left; top: 149px; left: 10px; width: 280px; font-size: 11px; line-height: 1.1; font-weight: normal; max-height: 40px;}
@@ -413,20 +413,20 @@
 
     @media (max-width: 991px) {
         html, body {
-            height: auto !important;       
-            overflow-y: auto !important;   
-            display: block !important;     
+            height: auto !important;
+            overflow-y: auto !important;
+            display: block !important;
         }
 
-        .container { 
-            padding: 10px; 
+        .container {
+            padding: 10px;
             max-width: 100%;
-            height: auto !important;      
+            height: auto !important;
         }
         .card {
-            height: auto !important; 
+            height: auto !important;
             overflow: visible !important;
-            margin-bottom: 80px; 
+            margin-bottom: 80px;
         }
 
         .card-body-flex {
@@ -435,43 +435,43 @@
             height: auto !important;
         }
 
-        .step-indicator { 
-            padding: 0 5px; 
-            margin-bottom: 25px; 
+        .step-indicator {
+            padding: 0 5px;
+            margin-bottom: 25px;
         }
-        
+
         .step {
-            width: 30px; height: 30px; 
+            width: 30px; height: 30px;
             font-size: 0.9rem;
         }
 
         .form-control, .form-select, .input-group-text {
-            font-size: 16px !important; 
+            font-size: 16px !important;
         }
 
         .id-card-wrapper {
-            position: relative; 
-            margin-top: 20px;    
-            margin-bottom: 40px; 
+            position: relative;
+            margin-top: 20px;
+            margin-bottom: 40px;
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-        
+
         .pup-id-card {
-            transform: scale(0.85); 
+            transform: scale(0.85);
             transform-origin: top center;
-            margin-bottom: -60px; 
+            margin-bottom: -60px;
         }
-        
+
         .button-container {
             position: relative;
             background: #fff;
             z-index: 10;
             padding-bottom: 10px;
         }
-        
+
         .custom-dropdown-toggle {
             font-size: 14px;
             white-space: nowrap;
@@ -482,7 +482,7 @@
 
     @media (max-width: 380px) {
         .pup-id-card {
-            transform: scale(0.75); 
+            transform: scale(0.75);
             margin-bottom: -100px;
         }
     }
@@ -498,13 +498,13 @@
 <div class="container mt-5">
      <div class="row">
         <div class="col-lg-7">
-            <div class="card shadow-sm"> 
+            <div class="card shadow-sm">
                 <div class="card-header text-white">
                     <h5 class="mb-0 fw-bold" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.6);">Registration Form</h5>
                 </div>
-                
+
                 <div class="card-body card-body-flex">
-                    
+
                     <div class="step-indicator">
                         <div class="step active" id="step-dot-1">1</div>
                         <div class="step" id="step-dot-2">2</div>
@@ -514,7 +514,7 @@
 
                     <form action="" method="POST" enctype="multipart/form-data" id="regForm" autocomplete="off">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        
+
                         <div class="form-step active" id="step-1">
                             <h5 class="section-title mb-3">Academic Information</h5>
                             <div class="row mb-3">
@@ -523,7 +523,7 @@
                                     <input type="hidden" name="organization" id="orgSelect" required>
                                     <div class="dropdown">
                                         <button class="btn custom-dropdown-toggle w-100 text-start" type="button" id="orgDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <span>Select Org</span> 
+                                            <span>Select Org</span>
                                         </button>
                                         <ul class="dropdown-menu w-100" aria-labelledby="orgDropdownBtn" style="max-height: 300px; overflow-y: auto;">
                                             <li><a class="dropdown-item" onclick="selectOrg('ACES', 'aces.png')"><img src="{{ url_for('static', filename='img/orgs/aces.png') }}" class="org-logo"> ACES</a></li>
@@ -619,7 +619,7 @@
                                         <input type="date" class="form-control" name="birthdate" id="inputBirthdate" required>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6" style="display: none;">
                                     <label class="form-label">Upload Photo (2x2) <span class="text-muted small fw-normal">(Optional)</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-image"></i></span>
@@ -653,7 +653,7 @@
                                     <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
                                     <input type="text" class="form-control" name="emergency_address" id="inputEmergencyAdd" placeholder="Full Address" required>
                                 </div>
-                                
+
                                 <div class="form-check mt-3">
                                     <input class="form-check-input" type="checkbox" id="sameAddressCheck">
                                     <label class="form-check-label" for="sameAddressCheck" style="font-size: 0.85rem; font-weight: normal; text-transform: none;">
@@ -666,10 +666,10 @@
                         <div class="form-step" id="step-4">
                             <h5 class="section-title mb-3">Review Registration</h5>
                             <p class="text-muted">
-                                Please review the details below and the Live ID Preview <strong>(Flip to check the back)</strong>. 
+                                Please review the details below and the Live ID Preview <strong>(Flip to check the back)</strong>.
                                 Once verified, <strong>check the certification box</strong> to enable the Submit button.
                             </p>
-                            
+
                             <div class="table-responsive">
                                 <table class="table table-sm table-bordered">
                                     <col style="width: 25%; background-color: #ffffff;">
@@ -681,7 +681,7 @@
                                     <tr><th>Address</th><td id="reviewAddress">-</td></tr>
                                 </table>
                             </div>
-                            
+
                             <div class="certification-box">
                                 <div class="form-check">
                                     <input class="form-check-input big-checkbox" type="checkbox" id="confirmCheck">
@@ -711,7 +711,7 @@
                         <i class="bi bi-arrow-repeat"></i> Flip ID
                     </button>
                 </div>
-                
+
                 <div class="pup-id-card" id="idCard3D">
                     <div class="card-face card-front">
                         <img src="{{ url_for('static', filename='img/id_front_preview.jpg') }}" class="id-bg" alt="Front">
@@ -741,7 +741,7 @@
         </div>
     </div>
 </div>
-   
+
 {% endblock %}
 
 {% block scripts %}
@@ -750,7 +750,7 @@
     const dbSectionData = {{ section_data_json | safe }};
     document.addEventListener("DOMContentLoaded", function() {
         const dropdownMenu = document.querySelector('ul[aria-labelledby="orgDropdownBtn"]');
-        dropdownMenu.innerHTML = ''; 
+        dropdownMenu.innerHTML = '';
         Object.keys(dbOrgData).forEach(orgCode => {
             const org = dbOrgData[orgCode];
             const li = document.createElement('li');
@@ -799,8 +799,8 @@
         courseSelect.innerHTML = '<option value="" selected disabled>Select Course...</option>';
         data.courses.forEach(c => {
             let opt = document.createElement('option');
-            opt.value = c.code; 
-            opt.textContent = c.name; 
+            opt.value = c.code;
+            opt.textContent = c.name;
             opt.setAttribute('data-fullname', c.name);
             courseSelect.appendChild(opt);
         });
@@ -812,7 +812,7 @@
     function updateSections() {
         const c = courseSelect.value;
         const y = yearSelect.value;
-        
+
         sectionSelect.innerHTML = '<option value="" selected disabled>Select...</option>';
 
         if (dbSectionData[c] && dbSectionData[c][y]) {
@@ -820,8 +820,8 @@
             sections.sort();
             sections.forEach(s => {
                 let opt = document.createElement('option');
-                opt.value = s; 
-                opt.textContent = s; 
+                opt.value = s;
+                opt.textContent = s;
                 sectionSelect.appendChild(opt);
             });
         }
@@ -834,7 +834,7 @@
 
         for (let i = 1; i <= totalSteps; i++) {
             const dot = document.getElementById(`step-dot-${i}`);
-            dot.className = "step"; 
+            dot.className = "step";
             dot.style = "";
 
             if (i < currentStep) {
@@ -864,7 +864,7 @@
         currentStep += n;
         document.getElementById(`step-${currentStep}`).classList.add('active');
         updateStepVisuals();
-        
+
         document.getElementById('prevBtn').disabled = (currentStep === 1);
         if (currentStep === totalSteps) {
             document.getElementById('nextBtn').style.display = 'none';
@@ -887,7 +887,7 @@
         if (!input.checkValidity()) {
             input.reportValidity();
             valid = false;
-        } 
+        }
         else if (input.type === "email") {
             const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailPattern.test(input.value)) {
@@ -928,7 +928,7 @@
         document.getElementById('previewValidName').textContent = `${first} ${midInitial} ${last}`;
         document.getElementById('reviewName').innerText = `${first} ${midInitial} ${last}`;
     }
-    
+
     [inputFirst, inputMiddle, inputLast].forEach(el => el.addEventListener('input', updateNames));
 
     document.getElementById('inputStudentNum').addEventListener('input', function() {

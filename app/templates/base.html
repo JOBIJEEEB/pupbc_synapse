@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ACES Synapse | {% block title %}{% endblock %}</title>
-    
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/orgs/ACES.png') }}">
@@ -16,9 +16,23 @@
     html, body {
         height: 100vh;
         margin: 0;
-        overflow: hidden; 
+        overflow: hidden;
         font-family: 'Poppins', sans-serif;
     }
+
+
+    div:where(.swal2-container) .swal2-popup {
+        font-family: 'Poppins', sans-serif !important;
+        border-radius: 15px !important;
+    }
+
+    div:where(.swal2-container) .swal2-title {
+        font-weight: 700 !important;
+    }
+
+    .swal-border-success { border-top: 5px solid #198754 !important; }
+    .swal-border-error { border-top: 5px solid #dc3545 !important; }
+    .swal-border-brand { border-top: 5px solid #800000 !important; }
 
     .modern-navbar {
         height: 70px;
@@ -27,7 +41,7 @@
         backdrop-filter: blur(10px);
         box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 0; 
+        padding: 0;
         transition: all 0.3s ease;
     }
 
@@ -46,8 +60,8 @@
         color: rgba(255,255,255,0.8) !important;
         transition: color 0.3s ease;
         margin-left: 15px;
-        display: inline-block; 
-        padding: 23px 0;     
+        display: inline-block;
+        padding: 23px 0;
         height: 70px;
     }
 
@@ -60,7 +74,7 @@
         position: absolute;
         width: 0;
         height: 2px;
-        bottom: 18px; 
+        bottom: 18px;
         left: 0;
         background-color: #fff;
         transition: width 0.3s ease;
@@ -96,7 +110,7 @@
     }
     div:where(.swal2-container) .swal2-popup {
         font-family: 'Poppins', sans-serif !important;
-        border-radius: 15px !important; 
+        border-radius: 15px !important;
         border-top: 5px solid #800000;
     }
     div:where(.swal2-container) .swal2-title {
@@ -119,13 +133,13 @@
             setTimeout(() => {
                 toast.classList.remove('show');
                 toast.classList.add('fade');
-                setTimeout(() => toast.remove(), 1500); 
+                setTimeout(() => toast.remove(), 1500);
             }, 4000);
         });
     });
 </script>
 
-<body class="d-flex flex-column"> 
+<body class="d-flex flex-column">
     <nav class="navbar navbar-expand-lg navbar-dark modern-navbar sticky-top">
         <div class="container px-4 h-100">
             <a class="navbar-brand" href="/">
@@ -157,31 +171,7 @@
         </div>
     </nav>
 
-    <div class="container-fluid p-0 flex-grow-1 d-flex flex-column overflow-hidden"> 
-        <div id="flash-container">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="flash-toast alert alert-{{ category }} shadow-sm fade show" role="alert">
-                            <div class="d-flex align-items-center">
-                                {% if category == 'success' %}
-                                    <i class="bi bi-check-circle-fill me-2 fs-5"></i>
-                                {% elif category == 'danger' %}
-                                    <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
-                                {% else %}
-                                    <i class="bi bi-info-circle-fill me-2 fs-5"></i>
-                                {% endif %}
-                                
-                                <div>{{ message }}</div>
-                                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                            <div class="toast-progress"></div>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-        </div>
-
+    <div class="container-fluid p-0 flex-grow-1 d-flex flex-column overflow-hidden">
         {% block content %}
         {% endblock %}
     </div>
@@ -189,10 +179,9 @@
     <footer class="footer py-4 mt-auto">
         <div class="container text-center text-md-start">
             <div class="row align-items-center">
-                
                 <div class="col-md-6 text-muted small">
                     <p class="mb-1 text-white opacity-75">
-                        &copy; {{ now.year if now else 2026 }} <strong>ACES-PUPBC Synapse</strong> 
+                        &copy; {{ now.year if now else 2026 }} <strong>ACES-PUPBC Synapse</strong>
                         <span class="badge bg-white text-dark ms-1" style="font-size: 0.65rem;">v2.1.1</span>
                     </p>
                     <p class="mb-0 text-white opacity-50">
@@ -201,7 +190,7 @@
                 </div>
 
                 <div class="col-md-6 text-md-end mt-3 mt-md-0">
-                    
+
                     <a href="https://github.com/JOBIJEEEB" target="_blank" class="text-white small me-3 text-decoration-none fw-bold">
                         <i class="bi bi-github me-1"></i> Developed by JB Hernandez
                     </a>
@@ -217,11 +206,68 @@
                 </div>
             </div>
         </div>
-    </footer>  
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+    <script>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                document.addEventListener('DOMContentLoaded', function() {
+                    {% for category, message in messages %}
+                        var iconType = 'info';
+                        var titleText = 'Notification';
+                        var btnColor = '#800000';
+                        var borderClass = 'swal-border-brand';
+
+                        if ("{{ category }}" == "success") {
+                            iconType = 'success';
+                            titleText = 'Success!';
+                            btnColor = '#198754';
+                            borderClass = 'swal-border-success';
+                        }
+
+                        else if ("{{ category }}" == "error" || "{{ category }}" == "danger") {
+                            iconType = 'error';
+                            titleText = 'Error';
+                            btnColor = '#dc3545';
+                            borderClass = 'swal-border-error';
+                        }
+
+                        else if ("{{ category }}" == "warning") {
+                            iconType = 'warning';
+                            titleText = 'Warning';
+                        }
+
+                        Swal.fire({
+                            title: titleText,
+                            text: "{{ message }}",
+                            icon: iconType,
+
+                            confirmButtonText: 'Got it',
+                            confirmButtonColor: btnColor,
+
+                            heightAuto: false,
+
+                            customClass: {
+                                popup: borderClass
+                            },
+
+                            didOpen: () => {
+                            const title = Swal.getTitle();
+                            title.style.setProperty('color', btnColor, 'important');
+                            },
+
+                            showClass: { popup: 'animate__animated animate__fadeInDown' },
+                            hideClass: { popup: 'animate__animated animate__fadeOutUp' }
+                        });
+
+                    {% endfor %}
+                });
+            {% endif %}
+        {% endwith %}
+    </script>
+
     {% block scripts %}{% endblock %}
 </body>
 </html>

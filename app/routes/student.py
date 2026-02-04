@@ -1,13 +1,17 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app
 from app.models import db, Student, Organization, Course, Section
 from app.utils import save_student_photo
 import json
 from datetime import datetime
+import os
 
 student_bp = Blueprint('student', __name__)
 
 @student_bp.route('/register', methods=['GET', 'POST'])
 def register():
+    lock_file = os.path.join(current_app.root_path, 'maintenance.lock')
+    if os.path.exists(lock_file):
+        return render_template('maintenance.html')
     if request.method == 'POST':
         try:
             s_num = request.form['student_number']
@@ -60,13 +64,13 @@ def register():
             return redirect(url_for('student.register'))
 
     orgs = Organization.query.order_by(Organization.code).all()
-    
+
     org_data = {}
     for org in orgs:
         courses = []
         for course in org.courses:
             courses.append({"code": course.code, "name": course.name})
-        
+
         org_data[org.code] = {
             "name": org.name,
             "color": org.color_primary,
@@ -85,6 +89,6 @@ def register():
         if year not in section_data[course_code]: section_data[course_code][year] = []
         section_data[course_code][year].append(sec.name)
 
-    return render_template('student/register.html', 
+    return render_template('student/register.html',
                            org_data_json=json.dumps(org_data),
                            section_data_json=json.dumps(section_data))

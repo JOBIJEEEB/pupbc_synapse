@@ -7,6 +7,7 @@ from app.models import db, Admin, Student, Organization, Course, Section
 import json
 import csv
 import io
+import subprocess
 from flask import Response, stream_with_context
 from functools import wraps
 from datetime import datetime
@@ -17,7 +18,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not session.get('admin_logged_in'):
-            flash("Nt. Mag log-in ka muna boi", "danger")
+            flash("Please login muna po :)", "danger")
             return redirect(url_for('admin.login'))
         return f(*args, **kwargs)
     return decorated_function
@@ -28,7 +29,7 @@ def login():
         username = request.form['username']
         password = request.form['password']
         suspicious_patterns = [
-            "'", '"', "--", ";", "/*", "#", 
+            "'", '"', "--", ";", "/*", "#",
             "OR 1=1", "OR '1'='1", "OR TRUE",
             "UNION", "SELECT", "DROP", "DELETE", "UPDATE", "INSERT", "TABLE", "FROM",
             "INFORMATION_SCHEMA", "SYSOBJECTS", "@@VERSION",
@@ -59,7 +60,7 @@ def login():
 def dashboard():
     organizations = Organization.query.order_by(Organization.code).all()
     stats_query = db.session.query(
-        Student.course, 
+        Student.course,
         func.count(Student.id)
     ).group_by(Student.course).all()
     course_counts = {course: count for course, count in stats_query}
@@ -73,13 +74,13 @@ def view_course(course_name):
 
     students = Student.query.filter(
         or_(
-            Student.course == course_name,  
-            Student.course == course_code   
+            Student.course == course_name,
+            Student.course == course_code
         )
     ).all()
 
     total_registered = len(students)
-    section_counts = {} 
+    section_counts = {}
 
     grouped_data = {}
     for student in students:
@@ -90,10 +91,10 @@ def view_course(course_name):
 
         if year not in grouped_data:
             grouped_data[year] = {}
-        
+
         if section not in grouped_data[year]:
             grouped_data[year][section] = []
-            
+
         grouped_data[year][section].append(student)
 
     sorted_grouped_data = {
@@ -103,10 +104,10 @@ def view_course(course_name):
     course = Course.query.filter_by(name=course_name).first()
     org = course.organization if course else None
 
-    return render_template('admin/course_view.html', 
-                           course_name=course_name, 
+    return render_template('admin/course_view.html',
+                           course_name=course_name,
                            grouped_data=sorted_grouped_data,
-                           course_code=course_code, 
+                           course_code=course_code,
                            org=org,
                            total_registered=total_registered,
                            section_counts=section_counts)
@@ -115,9 +116,9 @@ def view_course(course_name):
 @login_required
 def generate_id(id):
     student = Student.query.get_or_404(id)
-    
+
     course_obj = Course.query.filter_by(code=student.course).first()
-    
+
     student.full_course_name = course_obj.name if course_obj else student.course
     return render_template('admin/id_card.html', students=[student])
 
@@ -131,7 +132,7 @@ def batch_print():
         return redirect(request.referrer)
     students = Student.query.filter(Student.id.in_(ids)).order_by(Student.last_name).all()
     all_courses = {c.code: c.name for c in Course.query.all()}
-    
+
     for s in students:
         s.full_course_name = all_courses.get(s.course, s.course)
 
@@ -156,7 +157,7 @@ def edit_student(id):
             student.student_number = request.form['student_number']
             student.email = request.form['email']
             student.residential_address = request.form['residential_address']
-            
+
             birthdate_str = request.form['birthdate']
             if birthdate_str:
                 student.birthdate = datetime.strptime(birthdate_str, '%Y-%m-%d').date()
@@ -194,8 +195,8 @@ def edit_student(id):
         if c_code not in section_data: section_data[c_code] = {}
         if y_level not in section_data[c_code]: section_data[c_code][y_level] = []
         section_data[c_code][y_level].append(sec.name)
-    
-    return render_template('admin/edit_student.html', 
+
+    return render_template('admin/edit_student.html',
                            student=student,
                            org_data_json=json.dumps(org_data),
                            section_data_json=json.dumps(section_data))
@@ -204,7 +205,7 @@ def edit_student(id):
 @login_required
 def delete_student(id):
     student = Student.query.get_or_404(id)
-    course_name = student.course 
+    course_name = student.course
     db.session.delete(student)
     db.session.commit()
     flash('Student deleted successfully!')
@@ -214,7 +215,7 @@ def delete_student(id):
 @login_required
 def delete_bulk():
     student_ids = request.form.getlist('student_ids')
-    
+
     if not student_ids:
         flash('No students selected.', 'warning')
         return redirect(request.referrer)
@@ -222,15 +223,15 @@ def delete_bulk():
     try:
         Student.query.filter(Student.id.in_(student_ids)).delete(synchronize_session=False)
         db.session.commit()
-        
+
         flash(f'Successfully deleted {len(student_ids)} students.', 'success')
-        
+
     except Exception as e:
         db.session.rollback()
         flash(f'Error deleting students: {str(e)}', 'danger')
     return redirect(request.referrer)
 
-#  SETTINGS 
+#  SETTINGS
 
 @admin_bp.route('/settings')
 @login_required
@@ -255,7 +256,7 @@ def add_org():
         name = request.form['name']
         color_primary = request.form['color_primary']
         color_gradient = f"linear-gradient(to right, {color_primary}, {color_primary})"
-        
+
         logo_filename = 'default_logo.png'
         header_filename = 'default_header.jpg'
 
@@ -264,7 +265,7 @@ def add_org():
             filename = secure_filename(file.filename)
             save_path = os.path.join(current_app.root_path, 'static/img/orgs')
             if not os.path.exists(save_path): os.makedirs(save_path)
-            
+
             file.save(os.path.join(save_path, filename))
             logo_filename = filename
 
@@ -276,19 +277,19 @@ def add_org():
             header_filename = filename
 
         new_org = Organization(
-            code=code, 
-            name=name, 
-            color_primary=color_primary, 
-            color_gradient=color_gradient, 
-            logo_filename=logo_filename, 
+            code=code,
+            name=name,
+            color_primary=color_primary,
+            color_gradient=color_gradient,
+            logo_filename=logo_filename,
             header_bg_filename=header_filename
         )
-        
+
         db.session.add(new_org)
         db.session.commit()
-        
+
         flash(f"Organization '{code}' added successfully!", "success")
-        
+
     except Exception as e:
         db.session.rollback()
         flash(f"Error adding organization: {str(e)}", "danger")
@@ -350,14 +351,14 @@ def delete_org(id):
         for course in courses:
             Section.query.filter_by(course_id=course.id).delete()
             db.session.delete(course)
-        
+
         db.session.delete(org)
         db.session.commit()
         flash(f"Organization '{org.code}' deleted.", "success")
     except Exception as e:
         db.session.rollback()
         flash(f"Error deleting organization: {str(e)}", "danger")
-        
+
     return redirect(url_for('admin.settings'))
 
 @admin_bp.route('/settings/delete_course/<int:id>', methods=['POST'])
@@ -385,10 +386,10 @@ def delete_section(id):
         db.session.delete(section)
         db.session.commit()
         flash(f"Section '{name}' deleted.", "success")
-    except Exception as e: 
+    except Exception as e:
         db.session.rollback()
         flash(f"Error deleting section: {str(e)}", "danger")
-        
+
     return redirect(url_for('admin.settings'))
 
 # EDIT ROUTES (Redirects)
@@ -402,13 +403,13 @@ def edit_org(id):
         org.name = request.form['name']
         org.color_primary = request.form['color_primary']
         org.color_gradient = f"linear-gradient(to right, {org.color_primary}, {org.color_primary})"
-        
+
         db.session.commit()
         flash(f"Organization '{org.code}' updated!", "success")
     except Exception as e:
         db.session.rollback()
         flash(f"Error updating org: {str(e)}", "danger")
-        
+
     return redirect(url_for('admin.settings'))
 
 @admin_bp.route('/settings/edit_course/<int:id>', methods=['POST'])
@@ -419,13 +420,13 @@ def edit_course(id):
         course.code = request.form['code']
         course.name = request.form['name']
         course.org_id = request.form['org_id']
-        
+
         db.session.commit()
         flash(f"Course '{course.code}' updated!", "success")
     except Exception as e:
         db.session.rollback()
         flash(f"Error updating course: {str(e)}", "danger")
-        
+
     return redirect(url_for('admin.settings'))
 
 @admin_bp.route('/settings/edit_section/<int:id>', methods=['POST'])
@@ -436,13 +437,13 @@ def edit_section(id):
         section.name = request.form['name']
         section.year_level = request.form['year_level']
         section.course_id = request.form['course_id']
-        
+
         db.session.commit()
         flash(f"Section '{section.name}' updated!", "success")
     except Exception as e:
         db.session.rollback()
         flash(f"Error updating section: {str(e)}", "danger")
-        
+
     return redirect(url_for('admin.settings'))
 
 @admin_bp.route('/export_csv_filtered')
@@ -461,7 +462,7 @@ def export_csv_filtered():
     if target_course_name:
         course_obj = Course.query.filter_by(name=target_course_name).first()
         if course_obj:
-            file_prefix = course_obj.code 
+            file_prefix = course_obj.code
             target_code = course_obj.code
         else:
             file_prefix = "UnknownCourse"
@@ -469,11 +470,11 @@ def export_csv_filtered():
 
         query = query.filter(
             or_(
-                Student.course == target_course_name, 
+                Student.course == target_course_name,
                 Student.course == target_code
             )
         )
-    students = query.all()
+    students = query.order_by(Student.last_name).all()
     if not students:
         flash("No students found in that section.", "warning")
         return redirect(request.referrer)
@@ -485,48 +486,122 @@ def export_csv_filtered():
         w = csv.writer(data)
 
         w.writerow((
-            'student_number', 
-            'last_name', 
-            'middle_name', 
-            'first_name', 
-            'course', 
-            'yr_lvl', 
-            'section', 
-            'birthdate', 
-            'res_address', 
-            'contact_person', 
-            'contact_person_address', 
-            'contact_person_number'
+            'STUDNO',
+            'LASTNAME',
+            'MDLENAME',
+            'FRSTNAME',
+            'PROGCODE',
+            'YRLVL',
+            'SEC',
+            'BRTHDATE',
+            'RES_ADDRESS',
+            'CONTACT_PERSON',
+            'CONTACT_PERSON_ADDRESS',
+            'CONTACT_PERSON_NUMBER',
+            'FNMI'
         ))
-        
-        yield data.getvalue()
+
+        yield data.getvalue().encode('windows-1252', errors='replace')
         data.seek(0)
         data.truncate(0)
 
         for s in students:
+            def clean(text):
+                return str(text).strip().upper() if text else ""
+
+            s_studno = clean(s.student_number)
+            s_lname = clean(s.last_name)
+            s_mname = clean(s.middle_name)
+            s_fname = clean(s.first_name)
+
+            if s_mname:
+                s_fnmi = f"{s_fname} {s_mname[0]}."
+            else:
+                s_fnmi = s_fname
+
             w.writerow((
-                s.student_number,
-                s.last_name,
-                s.middle_name or "",
-                s.first_name,
-                s.course,
-                s.year_level,
-                s.section,
-                s.birthdate.strftime('%m-%d-%Y'),
-                s.residential_address,
-                s.emergency_contact_name,    
-                s.emergency_address,         
-                s.emergency_contact_number   
+                s_studno,
+                s_lname,
+                s_mname,
+                s_fname,
+                clean(s.course),
+                clean(s.year_level),
+                clean(s.section),
+                s.birthdate.strftime('%m/%d/%Y'),
+                clean(s.residential_address),
+                clean(s.emergency_contact_name),
+                clean(s.emergency_address),
+                str(s.emergency_contact_number),
+                s_fnmi
             ))
-            
-            yield data.getvalue()
+
+            yield data.getvalue().encode('windows-1252', errors='replace')
             data.seek(0)
             data.truncate(0)
 
-    response = Response(stream_with_context(generate()), mimetype='text/csv')
+    response = Response(stream_with_context(generate()), mimetype='text/csv; charset=windows-1252')
     response.headers.set('Content-Disposition', 'attachment', filename=filename)
     return response
 
 @admin_bp.route('/nice-try')
 def troll_page():
     return render_template('admin/jb.html')
+
+@admin_bp.route('/api/public_stats')
+def public_stats():
+    username = os.environ.get('USER')
+    try:
+        home_out = subprocess.check_output(['du', '-sb', f"/home/{username}"])
+        total_bytes = int(home_out.split()[0])
+        real_mb = round(total_bytes / (1024 * 1024), 1)
+    except:
+        real_mb = 0
+
+    system_overhead = 16.0
+
+    final_mb = real_mb + system_overhead
+    quota_mb = 512.0
+
+    username = os.environ.get('USER')
+    total_bytes = 0
+    try:
+        total_bytes += int(subprocess.check_output(['du', '-sb', f"/home/{username}"]).split()[0])
+        final_mb = round((total_bytes / (1024*1024)) + 16.0, 1)
+    except:
+        final_mb = 0
+
+    course_counts = {}
+    try:
+        results = db.session.query(Student.course, func.count(Student.id)).group_by(Student.course).all()
+        for course, count in results:
+            course_counts[course] = count
+    except:
+        course_counts = {"Error": 0}
+
+    lock_file = os.path.join(current_app.root_path, 'maintenance.lock')
+    is_maintenance = os.path.exists(lock_file)
+
+    return jsonify({
+        'storage_mb': final_mb,
+        'quota_mb': 512.0,
+        'percent': round((final_mb/512.0)*100, 1),
+        'courses': course_counts,
+        'maintenance': is_maintenance
+    })
+
+@admin_bp.route('/api/toggle_maintenance', methods=['POST'])
+def toggle_maintenance():
+    if request.headers.get('X-Secret') != "ACES_COMMAND_KEY_2026":
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    lock_file = os.path.join(current_app.root_path, 'maintenance.lock')
+
+    action = request.json.get('action')
+
+    if action == 'on':
+        open(lock_file, 'a').close()
+        return jsonify({'status': 'locked'})
+    else:
+        if os.path.exists(lock_file):
+            os.remove(lock_file)
+        return jsonify({'status': 'unlocked'})
